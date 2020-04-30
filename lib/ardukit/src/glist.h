@@ -7,14 +7,14 @@
 #pragma once
 #include "adkdef.h"
 
-namespace gcl {
+namespace adk {
 
 //-----------------------------------------------------------------------------
 // doublely linked list
 //-----------------------------------------------------------------------------
-class gcl_api glist {
+class glist {
 public:
-    class gcl_api node {
+    class node {
     protected:
         node       *m_prev = this;
         node       *m_next = this;
@@ -58,7 +58,7 @@ public:
 
 
 template <class T = void>
-class gcl_api list : public glist {
+class list : public glist {
 public:
     list() {}
     ~list() {}
@@ -75,7 +75,7 @@ public:
     T *nextOf(T *nod = 0) { return (T *)glist::nextOf(nod); }
 };
 
-} // namespace gcl
+} // namespace adk
 
 
-using GList = gcl::glist;
+using GList = adk::glist;

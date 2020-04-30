@@ -8,10 +8,10 @@
 #include "gmbox.h"
 #include "glist.h"
 
-namespace gcl {
+namespace adk {
 
 const int MAX_EVENT_NAME_LENGTH = 15;
-class gcl_api GEvent {
+class GEvent {
 protected:
     const char          *m_eventName;
     const void          *m_data;;
@@ -40,7 +40,7 @@ typedef struct {
     bool                once;
 } _event_listener;
 
-class gcl_api GEventQ : public gcl::list<GEventQ>::node, public gcl::mbox<_event_listener> {
+class GEventQ : public adk::list<GEventQ>::node, public adk::mbox<_event_listener> {
 protected:
 
 protected:
@@ -62,9 +62,9 @@ public:
 //-----------------------------------------------------------------------------
 //  class GEventEmitter
 //-----------------------------------------------------------------------------
-class gcl_api GEventEmitter {
+class GEventEmitter {
 protected:
-    gcl::list<GEventQ>      m_eqList;      // event queue list
+    adk::list<GEventQ>      m_eqList;      // event queue list
     unsigned                m_eqSize = 12;
 
 public:
@@ -87,7 +87,7 @@ protected:
     GEventQ *_findEventQ(const char *eventName);
 };
 
-} // namespace gcl
+} // namespace adk
 
-using GEvent = gcl::GEvent;
-using GEventEmitter = gcl::GEventEmitter;
+using GEvent = adk::GEvent;
+using GEventEmitter = adk::GEventEmitter;

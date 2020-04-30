@@ -7,12 +7,12 @@
 #pragma once
 #include "gque.h"
 
-namespace gcl {
+namespace adk {
 
 //-----------------------------------------------------------------------------
 //	class gmbox - thread safe queue (message box)
 //-----------------------------------------------------------------------------
-class gcl_api gmbox : protected gque {
+class gmbox : protected gque {
 protected:
 
 public:
@@ -55,7 +55,7 @@ protected:
 
 //--- type wrapper for gmbox
 template <class T = void>
-class gcl_api mbox : public gmbox {
+class mbox : public gmbox {
 public:
 	mbox() {};
 	mbox(unsigned capacity) : gmbox(capacity, sizeof(T)) {}
@@ -72,7 +72,7 @@ protected:
 	void reset(unsigned capacity, unsigned msgSize);    // disable
 };
 
-} // namespace gcl
+} // namespace adk
 
 
-using GMBox = gcl::gmbox;
+using GMBox = adk::gmbox;

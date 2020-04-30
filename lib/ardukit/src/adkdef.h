@@ -7,8 +7,6 @@
 #pragma once
 #include <stdint.h>
 
-#define gcl_api
-
 //--- types
 typedef int8_t      i8_t;
 typedef int16_t     i16_t;

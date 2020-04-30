@@ -7,9 +7,9 @@
 #pragma once
 #include "adkdef.h"
 
-namespace gcl {
+namespace adk {
 
-class gcl_api gque {
+class gque {
 protected:
     typedef struct {
         unsigned begin;     // constant: start of que (end of que contro block)
@@ -80,7 +80,7 @@ public:
 	T *end() const { return (T *)gque::end(); }
 };
 
-} // namespace gcl
+} // namespace adk
 
 
-using GQue = gcl::gque;
+using GQue = adk::gque;

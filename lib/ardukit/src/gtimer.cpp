@@ -9,7 +9,7 @@
 //-----------------------------------------------------------------------------
 //  GTimerEventQ
 //-----------------------------------------------------------------------------
-class GTimerEventQ : public gcl::GEventQ {
+class GTimerEventQ : public adk::GEventQ {
 public:
     GTimerEventQ() : GEventQ("timer", 32) {}
 
@@ -19,7 +19,7 @@ public:
 void GTimerEventQ::processEvents()
 {
     _lock();
-    gcl::_event_listener *ev = (gcl::_event_listener *)gque::peek();
+    adk::_event_listener *ev = (adk::_event_listener *)gque::peek();
     void *tail_marker = gque::tail();
     tick_t tm = GTimer::uticks();
     while (ev) {
@@ -28,7 +28,7 @@ void GTimerEventQ::processEvents()
             ev->handler(event);
             gque::pop();
         }
-        ev = (ev == tail_marker) ? 0 : (gcl::_event_listener *)gque::peek();
+        ev = (ev == tail_marker) ? 0 : (adk::_event_listener *)gque::peek();
     }
     _unlock();
 }
