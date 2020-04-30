@@ -10,52 +10,69 @@
 namespace gcl {
 
 //-----------------------------------------------------------------------------
-//	class GMBoxCore - thread safe message box core
+//	class gmbox - thread safe queue (message box)
 //-----------------------------------------------------------------------------
-class gcl_api gmbox {
+class gcl_api gmbox : protected gque {
 protected:
-    gque        m_q;
 
 public:
 	gmbox() {}
-	gmbox(unsigned capacity, unsigned msgSize, bool uselock=true) : m_q(capacity, msgSize) {}
+	gmbox(unsigned capacity, unsigned msgSize) : gque(capacity, msgSize) {}
 	~gmbox() {}
 
+	void reset() { _lock(); gque::reset(); _unlock(); }
 	void reset(unsigned capacity, unsigned msgSize)
-        { lock(); m_q.reset(capacity, msgSize); unlock(); }
-	void *peek() { return m_q.peek(); }
+        { _lock(); gque::reset(capacity, msgSize); _unlock(); }
 	bool put(const void *msg)
-        { lock(); bool r = m_q.put(msg); unlock(); return r; }
+        { _lock(); bool r = gque::put(msg); _unlock(); return r; }
 	bool get(void *msg)
-        { lock(); bool r = m_q.get(msg); unlock(); return r; }
-    unsigned length() { return m_q.length(); }
-    unsigned available() { return m_q.available(); }
-    unsigned capacity() { return m_q.capacity(); }
+        { _lock(); bool r = gque::get(msg); _unlock(); return r; }
+    bool push(const void *item)
+        { _lock(); unsigned r = gque::push(item); _unlock(); return r; }
+	bool pop(void *item=0)
+        { _lock(); unsigned r = gque::pop(item); _unlock(); return r; }
+    void clear() { _lock(); gque::clear(); _unlock(); }
 
-    void lock() {}
-    void unlock() {}
+	unsigned itemSize()
+        { _lock(); unsigned r = gque::itemSize(); _unlock(); return r; }
+    bool isEmpty()
+        { _lock(); unsigned r = gque::isEmpty(); _unlock(); return r; }
+    bool isFull()
+        { _lock(); unsigned r = gque::isFull(); _unlock(); return r; }
+
+    unsigned length()
+        { _lock(); unsigned r = gque::length(); _unlock(); return r; }
+    unsigned available()
+        { _lock(); unsigned r = gque::available(); _unlock(); return r; }
+    unsigned capacity()
+        { _lock(); unsigned r = gque::capacity(); _unlock(); return r; }
+
+protected:
+    void _lock() {}
+    void _unlock() {}
 };
 
 
-//-----------------------------------------------------------------------------
-//	class msgbox - thread safe message box core
-//-----------------------------------------------------------------------------
+//--- type wrapper for gmbox
 template <class T = void>
-class mbox : public gmbox {
+class gcl_api mbox : public gmbox {
 public:
 	mbox() {};
-	mbox(unsigned capacity, bool uselock=true) : gmbox(capacity, sizeof(T), uselock) {}
+	mbox(unsigned capacity) : gmbox(capacity, sizeof(T)) {}
 	~mbox() {}
 
     void reset(unsigned capacity) { gmbox::reset(capacity, sizeof(T)); }
-
-	T *peek() { return (T *)gmbox::peek(); }
-	bool get(T *msg) { return gmbox::get(msg); }
 	bool put(const T *msg) { return gmbox::put(msg); }
 	bool put(const T &msg) { return gmbox::put(&msg); }
+	bool get(T *msg) { return gmbox::get(msg); }
+    bool push(const T *item) { return gmbox::push(item); }
+	bool pop(void *item=0) { return gmbox::pop(item); }
+
+protected:
+	void reset(unsigned capacity, unsigned msgSize);    // disable
 };
 
 } // namespace gcl
 
 
-typedef gcl::gmbox      GMbox;
+using GMBox = gcl::gmbox;

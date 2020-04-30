@@ -9,19 +9,18 @@
 
 namespace gcl {
 
-typedef struct _gque_t {
-    unsigned begin;     // constant: start of que (end of que contro block)
-    unsigned end;       // constant: end of que
-    unsigned head;      // variable: que head
-    unsigned tail;      // varibale: que tail
-    unsigned item_size; // constant: entry item size
-} gque_t;
-
-
 class gcl_api gque {
 protected:
+    typedef struct {
+        unsigned begin;     // constant: start of que (end of que contro block)
+        unsigned end;       // constant: end of que
+        unsigned head;      // variable: que head
+        unsigned tail;      // varibale: que tail
+        unsigned item_size; // constant: entry item size
+    } gque_t;
+
     gque_t          *m_q;
-    template<class T> friend class queue;
+    template<class T> friend class que;
 
 public:
     gque();
@@ -31,10 +30,10 @@ public:
 	void reset(unsigned capacity, unsigned itemSize);
 	void reset() const { m_q->head = m_q->tail = m_q->begin; }
 
-	bool put(const void *item) const;
+	bool put(const void *item) const;   // append
 	bool get(void *item) const { return pop(item); }
-    bool push(const void *item) const;
-	bool pop(void *item=0) const;
+    bool push(const void *item) const;  // prepend
+	bool pop(void *item=0) const;       // take out from head
 	void clear() const { m_q->head = m_q->tail; }
 	void *peek() const { return isEmpty() ? 0 : _ptr(m_q->head); }
 	void *peekNext(const void *current=0) const;
@@ -54,14 +53,16 @@ public:
 
 protected:
     void *_ptr(unsigned offs) const { return (void *)((char *)m_q + offs); }
+    static gque_t _empty_q;
 };
 
 
+//--- type wrapper for gque
 template <class T>
-class queue : public gque {
+class que : public gque {
 public:
-    queue() {}
-    queue(unsigned capacity): gque(capacity, sizeof(T)) {}
+    que() {}
+    que(unsigned capacity): gque(capacity, sizeof(T)) {}
 
     void reset(unsigned capacity) { gque::reset(capacity, sizeof(T)); };
 
@@ -81,4 +82,5 @@ public:
 
 } // namespace gcl
 
-typedef gcl::gque       GQue;
+
+using GQue = gcl::gque;

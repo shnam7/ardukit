@@ -12,26 +12,26 @@
 //	class gcl::_gque_core
 //--------------------------------------------------------------------
 // set item size=1 to avoid division by zero
-static gcl::gque_t _empty_q = {
-    sizeof(gcl::gque_t),
-    sizeof(gcl::gque_t) + 1,
-    sizeof(gcl::gque_t),
-    sizeof(gcl::gque_t), 1};
+gcl::gque::gque_t gcl::gque::_empty_q = {
+    sizeof(gcl::gque::gque_t),
+    sizeof(gcl::gque::gque_t) + 1,
+    sizeof(gcl::gque::gque_t),
+    sizeof(gcl::gque::gque_t), 1};
 
-gcl::gque::gque() : m_q(&_empty_q) {}
+gcl_api gcl::gque::gque() : m_q(&_empty_q) {}
 
-gcl::gque::gque(unsigned capacity, unsigned itemSize) : m_q(&_empty_q)
+gcl_api gcl::gque::gque(unsigned capacity, unsigned itemSize) : m_q(&_empty_q)
 {
     reset(capacity, itemSize);
 }
 
-gcl::gque::~gque()
+gcl_api gcl::gque::~gque()
 {
     if (m_q != &_empty_q) delete[] m_q;
     m_q = 0;
 }
 
-void gcl::gque::reset(unsigned capacity, unsigned itemSize) {
+gcl_api void gcl::gque::reset(unsigned capacity, unsigned itemSize) {
     if (gque::capacity() == capacity) return reset();
     if (capacity == 0) {
         if (m_q != &_empty_q) delete [] m_q;
@@ -44,7 +44,6 @@ void gcl::gque::reset(unsigned capacity, unsigned itemSize) {
     if (!m_q) {
         m_q = &_empty_q;
         dmsg("_gque_core::_gque_core: memory allocation error.");
-        return;
     }
 
     // init que
@@ -56,7 +55,7 @@ void gcl::gque::reset(unsigned capacity, unsigned itemSize) {
 }
 
 // append
-bool gcl::gque::put(const void *item) const
+gcl_api bool gcl::gque::put(const void *item) const
 {
     // dmsg("put: b=%d h=%d t=%d e=%d size=%d\n", m_q->begin, m_q->head, m_q->tail, m_q->end, m_q->item_size);
 	unsigned npos = m_q->tail + m_q->item_size;
@@ -68,7 +67,7 @@ bool gcl::gque::put(const void *item) const
 }
 
 // prepend
-bool gcl::gque::push(const void *item) const {
+gcl_api bool gcl::gque::push(const void *item) const {
 	unsigned npos = m_q->head - m_q->item_size;
 	if ( npos < m_q->begin ) npos = m_q->end - m_q->item_size;
 	if ( npos == m_q->head ) return false;		// full
@@ -78,7 +77,7 @@ bool gcl::gque::push(const void *item) const {
 }
 
 // pop from head
-bool gcl::gque::pop(void *item) const
+gcl_api bool gcl::gque::pop(void *item) const
 {
     if ( m_q->head == m_q->tail ) return false; /* empty */
 
@@ -88,7 +87,7 @@ bool gcl::gque::pop(void *item) const
     return true;
 }
 
-void *gcl::gque::peekNext(const void *peek) const {
+gcl_api void *gcl::gque::peekNext(const void *peek) const {
     if (isEmpty()) return 0;
     if (peek == 0) return head();   // return first entry
     void *next = (char *)peek + m_q->item_size;
@@ -98,28 +97,28 @@ void *gcl::gque::peekNext(const void *peek) const {
     return next;
 }
 
-bool gcl::gque::isFull() const
+gcl_api bool gcl::gque::isFull() const
 {
 	unsigned npos = m_q->tail + m_q->item_size;
 	if ( npos == m_q->end ) npos = m_q->begin;
 	return npos == m_q->head;
 }
 
-unsigned gcl::gque::length() const
+gcl_api unsigned gcl::gque::length() const
 {
 	unsigned n = ( m_q->head<=m_q->tail ) ? (m_q->tail-m_q->head)
 			: (m_q->end-m_q->head) + (m_q->tail-m_q->begin);
 	return n / m_q->item_size;
 }
 
-unsigned gcl::gque::available() const
+gcl_api unsigned gcl::gque::available() const
 {
 	int n = ( m_q->head>m_q->tail ) ? (m_q->head-m_q->tail)
 			: (m_q->end-m_q->tail) + (m_q->head-m_q->begin);
 	return (n / m_q->item_size) - 1;
 }
 
-unsigned gcl::gque::capacity() const
+gcl_api unsigned gcl::gque::capacity() const
 {
     return ((m_q->end - m_q->begin) / m_q->item_size) - 1;
 }

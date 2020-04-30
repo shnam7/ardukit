@@ -35,7 +35,6 @@ protected:
     }
 };
 
-GTaskManager taskManager;
 const int LED_COUNT = 3;
 const int LED_PINS[LED_COUNT] = {3, 5, 6};
 Fader faders[LED_COUNT];

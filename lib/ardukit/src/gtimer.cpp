@@ -9,28 +9,28 @@
 //-----------------------------------------------------------------------------
 //  GTimerEventQ
 //-----------------------------------------------------------------------------
-class GTimerEventQ : public GEventQ {
+class GTimerEventQ : public gcl::GEventQ {
 public:
-    GTimerEventQ() : GEventQ("GTimer", 32) {}
+    GTimerEventQ() : GEventQ("timer", 32) {}
 
     void processEvents();
 };
 
 void GTimerEventQ::processEvents()
 {
-    unsigned len = m_evQ.length();
-    tick_t tick = GTimer::uticks();
-
-    for (unsigned i = 0; i < len; i++) {
-        event_listener_t evl;
-        m_evQ.get(&evl);
-        if (tick > evl.extraData) {
-            GEvent ev = {m_eventName, evl.data, evl.extraData};
-            evl.handler(ev);
-            continue;
+    _lock();
+    gcl::_event_listener *ev = (gcl::_event_listener *)gque::peek();
+    void *tail_marker = gque::tail();
+    tick_t tm = GTimer::uticks();
+    while (ev) {
+        if (tm > ev->extraData) {
+            GEvent event = { m_eventName, ev->data, ev->extraData };
+            ev->handler(event);
+            gque::pop();
         }
-        m_evQ.put(evl);
+        ev = (ev == tail_marker) ? 0 : (gcl::_event_listener *)gque::peek();
     }
+    _unlock();
 }
 
 //-----------------------------------------------------------------------------

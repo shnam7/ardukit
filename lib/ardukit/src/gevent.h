@@ -8,13 +8,14 @@
 #include "gmbox.h"
 #include "glist.h"
 
-#define MAX_EVENT_NAME_LENGTH  15
+namespace gcl {
 
-class GEvent {
+const int MAX_EVENT_NAME_LENGTH = 15;
+class gcl_api GEvent {
 protected:
-    const char      *m_eventName;
-    const void      *m_data;;
-    unsigned long   m_extraData;
+    const char          *m_eventName;
+    const void          *m_data;;
+    unsigned long       m_extraData;
 
 public:
     GEvent(const char *eventName, void *data, unsigned long extraData)
@@ -32,23 +33,22 @@ public:
 //-----------------------------------------------------------------------------
 //  class GEventQ
 //-----------------------------------------------------------------------------
-class GEventQ : public gcl::list<GEventQ>::node {
+typedef struct {
+    GEvent::Handler     handler;        // event handler
+    void                *data;          // user data
+    unsigned long       extraData;      // extra data
+    bool                once;
+} _event_listener;
+
+class gcl_api GEventQ : public gcl::list<GEventQ>::node, public gcl::mbox<_event_listener> {
 protected:
-    typedef struct {
-        GEvent::Handler     handler;        // event handler
-        void                *data;          // user data
-        unsigned long       extraData;      // extra data
-        bool                once;
-    } event_listener_t;
 
 protected:
     char                            m_eventName[MAX_EVENT_NAME_LENGTH+1];
-    gcl::mbox<event_listener_t>      m_evQ;
     friend class GEventEmitter;
 
 public:
-    GEventQ(const char *eventName, unsigned eventQSize=12);
-    ~GEventQ() {}
+    GEventQ(const char *eventName, unsigned eventQSize=32);
 
     bool addListener(GEvent::Handler handler, void *data = 0,
                      unsigned long extraData = 0, bool once = false);
@@ -56,14 +56,13 @@ public:
     void processEvents();
 
     const char *eventName() { return m_eventName; }
-    unsigned length() { return m_evQ.length(); }
 };
 
 
 //-----------------------------------------------------------------------------
 //  class GEventEmitter
 //-----------------------------------------------------------------------------
-class GEventEmitter {
+class gcl_api GEventEmitter {
 protected:
     gcl::list<GEventQ>      m_eqList;      // event queue list
     unsigned                m_eqSize = 12;
@@ -87,3 +86,8 @@ protected:
              unsigned long extraData = 0, bool once = false);
     GEventQ *_findEventQ(const char *eventName);
 };
+
+} // namespace gcl
+
+using GEvent = gcl::GEvent;
+using GEventEmitter = gcl::GEventEmitter;
