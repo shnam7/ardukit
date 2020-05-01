@@ -14,22 +14,8 @@ class GTaskManager;
 //-----------------------------------------------------------------------------
 //  GTask
 //-----------------------------------------------------------------------------
-class _runnable {
-protected:
-    friend class GTask;
-
-    _runnable() {}
-    virtual ~_runnable() {}
-    virtual void run(GTask &t) {}
-};
-
-
-//-----------------------------------------------------------------------------
-//  GTask
-//-----------------------------------------------------------------------------
 class GTask : public GEventEmitter {
 public:
-    typedef _runnable   Runnable;
     typedef void        (*TaskFunc)(GTask &t);
     friend class GTaskManager;
 
@@ -43,28 +29,25 @@ protected:
     tick_t          m_nextTick      = 0;
 
     TaskFunc        m_func          = 0;
-    Runnable        *m_runnable     = 0;
     void            *m_data         = 0;
     GTask           *m_next         = 0;
 
 protected:
-    virtual void onPrepare() {}
-    virtual void onStart() {}
+    // virtual void onPrepare() {}
+    // virtual void onStart() {}
     virtual void run();
-    virtual void onSleep() {}
-    virtual void onAwake() {}
-    virtual void onSuspend() {}
-    virtual void onResume() {}
+    // virtual void onSleep() {}
+    // virtual void onAwake() {}
+    // virtual void onSuspend() {}
+    // virtual void onResume() {}
 
 public:
     GTask() {}
     GTask(tick_t interval) : m_interval(interval*1000L) {}
-    GTask(Runnable *runnable, tick_t interval=0) : m_interval(interval*1000), m_runnable(runnable) {}
     GTask(TaskFunc func, tick_t interval = 0) : m_interval(interval*1000), m_func(func) {}
     ~GTask() { --GTask::s_taskCount; }
 
     GTask& bind(TaskFunc func, tick_t interval=0, void *data=0);
-    GTask& bind(Runnable *runnable, tick_t interval=0);
 
     void start(tick_t delay = 0);   // initial delay in msec
     void sleep(tick_t msec);
@@ -113,8 +96,6 @@ public:
     void remove(GTask &task) { remove(&task); }
 
     void run();
-
-    void emit(const char *eventName); // emit eventName for all the tasks
 
     GTask *getTask(unsigned id);
     GTask *nextOf(GTask *pCurrent=0);

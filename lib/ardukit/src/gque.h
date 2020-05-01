@@ -19,33 +19,33 @@ protected:
         unsigned item_size; // constant: entry item size
     } gque_t;
 
-    gque_t          *m_q;
+    gque_t          *m_q = 0;
     template<class T> friend class que;
 
 public:
-    gque();
-    gque(unsigned capacity, unsigned item_size);
+    gque() {}
+    gque(unsigned capacity, unsigned itemSize) { reset(capacity, itemSize); }
     ~gque();
 
 	void reset(unsigned capacity, unsigned itemSize);
-	void reset() const { m_q->head = m_q->tail = m_q->begin; }
+    void reset() const { if (m_q) { m_q->head = m_q->tail = m_q->begin; } }
 
-	bool put(const void *item) const;   // append
-	bool get(void *item) const { return pop(item); }
+    bool put(const void *item) const;   // append
+	bool get(void *item=0) const;         // pop from head
     bool push(const void *item) const;  // prepend
-	bool pop(void *item=0) const;       // take out from head
+	bool pop(void *item=0) const { return get(item); };
 	void clear() const { m_q->head = m_q->tail; }
 	void *peek() const { return isEmpty() ? 0 : _ptr(m_q->head); }
 	void *peekNext(const void *current=0) const;
 
 	//--- accessors
-	void *head() const { return _ptr(m_q->head); }
-	void *tail() const { return _ptr(m_q->tail); }
-	void *begin() const { return _ptr(m_q->begin); }
-	void *end() const { return _ptr(m_q->end); }
-	unsigned itemSize() { return m_q->item_size; }
+	void *head() const { return m_q ? _ptr(m_q->head) : 0; }
+	void *tail() const { return m_q ? _ptr(m_q->tail) : 0; }
+	void *begin() const { return m_q ? _ptr(m_q->begin) : 0; }
+	void *end() const { return m_q ? _ptr(m_q->end) : 0; }
+	unsigned itemSize() { return m_q ? m_q->item_size : 0; }
 
-    bool isEmpty() const { return m_q->head == m_q->tail; }
+    bool isEmpty() const { return !m_q || m_q->head==m_q->tail; }
     bool isFull() const;
 	unsigned length() const;        // # of entries
     unsigned available() const;
@@ -53,7 +53,6 @@ public:
 
 protected:
     void *_ptr(unsigned offs) const { return (void *)((char *)m_q + offs); }
-    static gque_t _empty_q;
 };
 
 

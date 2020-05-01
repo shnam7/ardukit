@@ -14,40 +14,35 @@
 adk::GEventQ::GEventQ(const char *eventName, unsigned eventQSize) {
     strncpy(m_eventName, eventName, MAX_EVENT_NAME_LENGTH);
     m_eventName[MAX_EVENT_NAME_LENGTH] = 0;
-    reset(eventQSize);
+    reset(eventQSize, sizeof(event_listener));
 }
 
 bool adk::GEventQ::addListener(GEvent::Handler handler, void *data,
                                   unsigned long extraData, bool once)
 {
-    _event_listener entry = {handler, data, extraData, once};
+    event_listener entry = {handler, data, extraData, once};
     return put(&entry);
 }
 
 void adk::GEventQ::removeListener(GEvent::Handler handler) {
-    _lock();
-    _event_listener *ev = (_event_listener *)gque::peek();
-    void *tail_marker = gque::tail();
-    while (ev) {
-        GEvent event = { m_eventName, ev->data, ev->extraData };
-        if (ev->handler == handler) gque::pop();
-        ev = (ev == tail_marker) ? 0 : (_event_listener *)gque::peek();
+    event_listener el;
+    unsigned len = gque::length();
+    while (len-- > 0) {
+        gque::get(&el);
+        if (el.handler != handler) gque::put(&el);
     }
-    _unlock();
 }
 
 
 void adk::GEventQ::processEvents() {
-    _lock();
-    _event_listener *ev = (_event_listener *)gque::peek();
-    void *tail_marker = gque::tail();
-    while (ev) {
-        GEvent event = { m_eventName, ev->data, ev->extraData };
-        ev->handler(event);
-        if (!ev->once) gque::pop();
-        ev = (ev == tail_marker) ? 0 : (_event_listener *)gque::peek();
+    event_listener el;
+    unsigned len = gque::length();
+    while (len-- > 0) {
+        gque::get(&el);
+        GEvent event = { m_eventName, el.data, el.extraData };
+        el.handler(event);
+        if (!el.once) gque::put(&el);
     }
-    _unlock();
 }
 
 

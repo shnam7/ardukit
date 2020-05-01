@@ -16,7 +16,6 @@ unsigned GTask::s_taskCount = 0;
 void GTask::run()
 {
     if (m_func) m_func(*this);
-    if (m_runnable) m_runnable->run(*this);
 }
 
 GTask& GTask::bind(TaskFunc func, tick_t interval, void *data)
@@ -24,17 +23,6 @@ GTask& GTask::bind(TaskFunc func, tick_t interval, void *data)
     if (m_state != _INIT) return *this;
     m_func = func;
     m_data = data;
-    m_interval = interval * 1000;
-    setState(_PREPARED);
-    scheduleNext();
-    adk::taskManager.add(this);
-    return *this;
-}
-
-GTask& GTask::bind(Runnable *runnable, tick_t interval)
-{
-    if (m_state != _INIT) return *this;
-    m_runnable = runnable;
     m_interval = interval * 1000;
     setState(_PREPARED);
     scheduleNext();
@@ -99,22 +87,25 @@ void GTask::setState(unsigned state)
 
     switch (state) {
     case _PREPARED:
-        onPrepare();
+        // onPrepare();
         emit("prepare");
         break;
     case _RUNNING:
         switch (m_lastState) {
-            case _PREPARED: onStart(); emit("start"); break;
-            case _SLEEPING: onAwake(); emit("awake"); break;
-            case _SUSPENDED: onResume(); emit("resume"); break;
+            // case _PREPARED: onStart(); emit("start"); break;
+            // case _SLEEPING: onAwake(); emit("awake"); break;
+            // case _SUSPENDED: onResume(); emit("resume"); break;
+            case _PREPARED: emit("start"); break;
+            case _SLEEPING: emit("awake"); break;
+            case _SUSPENDED: emit("resume"); break;
         }
         break;
     case _SLEEPING:
-        onSleep();
+        // onSleep();
         emit("sleep");
         break;
     case _SUSPENDED:
-        onSuspend();
+        // onSuspend();
         emit("suspend");
         break;
     }
@@ -156,7 +147,6 @@ void GTaskManager::run() {
     GTimer::processEvents();
     if (!m_cur) return;
 
-
     switch (m_cur->m_state) {
     case GTask::_RUNNING: {
         tick_t tm = GTimer::uticks();
@@ -181,14 +171,6 @@ void GTaskManager::run() {
     }
     m_cur = (m_cur->m_next) ? m_cur->m_next : m_head; // move on to next task
     // dmsg("s%d t=%ld n=%ld i=%ld",  m_cur->m_state, GTimer::uticks(), m_cur->m_nextTick, m_cur->m_interval);
-}
-
-void GTaskManager::emit(const char *eventName) {
-    GTask *pT = m_head;
-    while (pT) {
-        pT->emit(eventName);
-        pT = pT->m_next;
-    }
 }
 
 GTask *GTaskManager::getTask(unsigned id) {

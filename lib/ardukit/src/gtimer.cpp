@@ -6,50 +6,38 @@
 
 #include "gtimer.h"
 
-//-----------------------------------------------------------------------------
-//  GTimerEventQ
-//-----------------------------------------------------------------------------
-class GTimerEventQ : public adk::GEventQ {
-public:
-    GTimerEventQ() : GEventQ("timer", 32) {}
+using event_listener = adk::GEventQ::event_listener;
 
-    void processEvents();
-};
-
-void GTimerEventQ::processEvents()
-{
-    _lock();
-    adk::_event_listener *ev = (adk::_event_listener *)gque::peek();
-    void *tail_marker = gque::tail();
-    tick_t tm = GTimer::uticks();
-    while (ev) {
-        if (tm > ev->extraData) {
-            GEvent event = { m_eventName, ev->data, ev->extraData };
-            ev->handler(event);
-            gque::pop();
-        }
-        ev = (ev == tail_marker) ? 0 : (adk::_event_listener *)gque::peek();
-    }
-    _unlock();
-}
-
-//-----------------------------------------------------------------------------
-//  GTimer
-//-----------------------------------------------------------------------------
-static GTimerEventQ evQ;
+static GQue _timerEventQ(GTimer::TIMER_EVENT_QUE_SIZE, sizeof(event_listener));
 
 handle_t GTimer::setTimeout(GEvent::Handler handler, tick_t msec, void *data)
 {
-    evQ.addListener(handler, data, uticks() + msec * 1000);
-    return (handle_t)handler;
+    event_listener el = {handler, data, uticks() + msec * 1000, false};
+    return _timerEventQ.put(&el) ? (handle_t)handler : 0;
 }
 
 void GTimer::clearTimeout(handle_t handle)
 {
-    return evQ.removeListener((GEvent::Handler)handle);
+    event_listener el;
+    unsigned len = _timerEventQ.length();
+    while (len-- > 0) {
+        _timerEventQ.get(&el);
+        if (el.handler != (GEvent::Handler)handle) _timerEventQ.put(&el);
+    }
 }
 
 void GTimer::processEvents()
 {
-    evQ.processEvents();
+    event_listener el;
+    unsigned len = _timerEventQ.length();
+    tick_t tm = GTimer::uticks();
+    while (len-- > 0) {
+        _timerEventQ.get(&el);
+        if (tm >= el.extraData) {
+            GEvent event = { "timer", el.data, el.extraData };
+            el.handler(event);
+            continue;
+        }
+        _timerEventQ.put(&el);
+    }
 };

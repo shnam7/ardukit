@@ -15,6 +15,8 @@
 typedef unsigned long   tick_t;      // 32bit
 
 namespace GTimer {
+    const int TIMER_EVENT_QUE_SIZE  = 16;
+
     // microsec counter
     inline tick_t ticks() { return millis(); }
     inline tick_t elapsed(tick_t since) { return ticks() - since; }

@@ -5,7 +5,7 @@
  */
 
 #pragma once
-#include "gmbox.h"
+#include "gque.h"
 #include "glist.h"
 
 namespace adk {
@@ -33,22 +33,21 @@ public:
 //-----------------------------------------------------------------------------
 //  class GEventQ
 //-----------------------------------------------------------------------------
-typedef struct {
-    GEvent::Handler     handler;        // event handler
-    void                *data;          // user data
-    unsigned long       extraData;      // extra data
-    bool                once;
-} _event_listener;
+class GEventQ : public adk::list<GEventQ>::node, public adk::gque {
+public:
+    typedef struct {
+        GEvent::Handler     handler;        // event handler
+        void                *data;          // user data
+        unsigned long       extraData;      // extra data
+        bool                once;
+    } event_listener;
 
-class GEventQ : public adk::list<GEventQ>::node, public adk::mbox<_event_listener> {
 protected:
-
-protected:
-    char                            m_eventName[MAX_EVENT_NAME_LENGTH+1];
+    char    m_eventName[MAX_EVENT_NAME_LENGTH+1];
     friend class GEventEmitter;
 
 public:
-    GEventQ(const char *eventName, unsigned eventQSize=32);
+    GEventQ(const char *eventName, unsigned eventQSize=16);
 
     bool addListener(GEvent::Handler handler, void *data = 0,
                      unsigned long extraData = 0, bool once = false);

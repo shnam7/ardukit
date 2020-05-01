@@ -9,7 +9,7 @@ protected:
 
 public:
     Fader() {}
-    void config(int pinID, int interval=5, int delta=1, int pauseDelay=1000)
+    void config(int pinID, int interval=0, int delta=1, int pauseDelay=1000)
     {
         m_pinID = pinID;
         m_delta = delta;
@@ -35,8 +35,8 @@ protected:
     }
 };
 
-const int LED_COUNT = 3;
-const int LED_PINS[LED_COUNT] = {3, 5, 6};
+const int LED_COUNT = 6;
+const int LED_PINS[LED_COUNT] = {3, 5, 6, 9, 10, 11};
 Fader faders[LED_COUNT];
 
 void setup() {
@@ -44,7 +44,7 @@ void setup() {
 
     for (int i=0; i<LED_COUNT; i++) {
         faders[i].config(LED_PINS[i]);
-        faders[i].start(i * 1000);
+        faders[i].start(i * 200);
     }
 }
 
