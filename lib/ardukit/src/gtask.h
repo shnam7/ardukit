@@ -33,13 +33,13 @@ protected:
     GTask           *m_next         = 0;
 
 protected:
-    // virtual void onPrepare() {}
-    // virtual void onStart() {}
+    virtual void onPrepare() {}
+    virtual void onStart() {}
     virtual void run();
-    // virtual void onSleep() {}
-    // virtual void onAwake() {}
-    // virtual void onSuspend() {}
-    // virtual void onResume() {}
+    virtual void onSleep() {}
+    virtual void onAwake() {}
+    virtual void onSuspend() {}
+    virtual void onResume() {}
 
 public:
     GTask() {}

@@ -87,25 +87,22 @@ void GTask::setState(unsigned state)
 
     switch (state) {
     case _PREPARED:
-        // onPrepare();
+        onPrepare();
         emit("prepare");
         break;
     case _RUNNING:
         switch (m_lastState) {
-            // case _PREPARED: onStart(); emit("start"); break;
-            // case _SLEEPING: onAwake(); emit("awake"); break;
-            // case _SUSPENDED: onResume(); emit("resume"); break;
-            case _PREPARED: emit("start"); break;
-            case _SLEEPING: emit("awake"); break;
-            case _SUSPENDED: emit("resume"); break;
+            case _PREPARED: onStart(); emit("start"); break;
+            case _SLEEPING: onAwake(); emit("awake"); break;
+            case _SUSPENDED: onResume(); emit("resume"); break;
         }
         break;
     case _SLEEPING:
-        // onSleep();
+        onSleep();
         emit("sleep");
         break;
     case _SUSPENDED:
-        // onSuspend();
+        onSuspend();
         emit("suspend");
         break;
     }
