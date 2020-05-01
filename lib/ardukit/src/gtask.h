@@ -8,6 +8,10 @@
 #include "gtimer.h"
 #include "gevent.h"
 
+#ifndef ADK_TASK_EVENT_QUE_SIZE
+#define ADK_TASK_EVENT_QUE_SIZE     16
+#endif
+
 class GTask;
 class GTaskManager;
 
@@ -15,7 +19,7 @@ class GTaskManager;
 //  GTask
 //  events triggered: "prepare", "start", "sleep", "awake", "suspend", "resume"
 //-----------------------------------------------------------------------------
-class GTask : public GEventEmitter {
+class GTask {
 public:
     typedef void        (*TaskFunc)(GTask &t);
     friend class GTaskManager;
@@ -72,6 +76,12 @@ public:
     tick_t interval() { return m_interval/1000; }    // return in msec
     void *data() { return m_data; }
 
+    //--- event emitter shariing I/F to reduce memory usage
+    void on(const char *eventName, GEvent::Handler handler, void *data=0);
+    void off(const char *eventName, GEvent::Handler handler);
+    void once(const char *eventName, GEvent::Handler handler, void *data=0);
+    void emit(const char *eventName);
+
 protected:
     void setState(unsigned state);
 
@@ -104,7 +114,11 @@ public:
     unsigned taskCount();
 };
 
+
 namespace adk {
-    extern GTaskManager taskManager;
-    inline void run() { taskManager.run(); }
-}
+
+extern GTaskManager taskManager;
+
+inline void run() { taskManager.run(); }
+
+} // namespace adk

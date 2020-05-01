@@ -11,20 +11,20 @@
 //-----------------------------------------------------------------------------
 //  class GEventQ
 //-----------------------------------------------------------------------------
-adk::GEventQ::GEventQ(const char *eventName, unsigned eventQSize) {
+GEventQ::GEventQ(const char *eventName, unsigned eventQSize) {
     strncpy(m_eventName, eventName, MAX_EVENT_NAME_LENGTH);
     m_eventName[MAX_EVENT_NAME_LENGTH] = 0;
     reset(eventQSize, sizeof(event_listener));
 }
 
-bool adk::GEventQ::addListener(GEvent::Handler handler, void *data,
+bool GEventQ::addListener(GEvent::Handler handler, void *data,
                                   unsigned long extraData, bool once)
 {
     event_listener entry = {handler, data, extraData, once};
     return put(&entry);
 }
 
-void adk::GEventQ::removeListener(GEvent::Handler handler) {
+void GEventQ::removeListener(GEvent::Handler handler) {
     event_listener el;
     unsigned len = gque::length();
     while (len-- > 0) {
@@ -34,14 +34,15 @@ void adk::GEventQ::removeListener(GEvent::Handler handler) {
 }
 
 
-void adk::GEventQ::processEvents() {
+void GEventQ::processEvents(event_processor eventProcessor, unsigned long data)
+{
     event_listener el;
     unsigned len = gque::length();
     while (len-- > 0) {
         gque::get(&el);
         GEvent event = { m_eventName, el.data, el.extraData };
-        el.handler(event);
-        if (!el.once) gque::put(&el);
+        if (!eventProcessor || !eventProcessor(m_eventName, el, data)) el.handler(event);
+        if (!el.once) gque::put(&el);       // if not handled, put it back to the que
     }
 }
 
@@ -52,7 +53,7 @@ void adk::GEventQ::processEvents() {
 void GEventEmitter::_on(const char *eventName, GEvent::Handler handler,
                         void *data, unsigned long extraData, bool once)
 {
-    GEventQ *eQ = _findEventQ(eventName);
+    GEventQ *eQ = findEventQ(eventName);
     if (!eQ) {
         eQ = new GEventQ(eventName, m_eqSize);
         if (!eQ) {
@@ -61,22 +62,23 @@ void GEventEmitter::_on(const char *eventName, GEvent::Handler handler,
         }
         m_eqList.append(eQ);
     }
-    eQ->addListener(handler, data, extraData, once);
+    if (!eQ->addListener(handler, data, extraData, once))
+        dmsg("[GEventEmitter::_on] Warning:Event registration failed: eventName=%s", eventName);
 }
 
 void GEventEmitter::off(const char *eventName, GEvent::Handler handler)
 {
-    GEventQ *evQ = _findEventQ(eventName);
+    GEventQ *evQ = findEventQ(eventName);
     if (evQ) evQ->removeListener(handler);
 }
 
 void GEventEmitter::emit(const char *eventName) {
-    GEventQ *evQ = (GEventQ *)_findEventQ(eventName);
+    GEventQ *evQ = (GEventQ *)findEventQ(eventName);
     if (evQ) evQ->processEvents();
 }
 
 
-adk::GEventQ *GEventEmitter::_findEventQ(const char *eventName) {
+GEventQ *GEventEmitter::findEventQ(const char *eventName) {
     GEventQ *evQ = m_eqList.first();
     while (evQ) {
         if (strcmp(evQ->eventName(), eventName) == 0) return evQ;

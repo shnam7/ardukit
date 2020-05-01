@@ -8,6 +8,22 @@
 #include "gtimer.h"
 #include "platform.h"
 
+namespace adk {
+    GTaskManager taskManager;
+    GEventEmitter _taskEventEmitter(ADK_TASK_EVENT_QUE_SIZE);
+}
+
+static bool _taskEventProcessor(const char *eventName, GEventQ::event_listener& el, unsigned long data)
+{
+    // handle event if the event extraData matchs current task
+    if (el.extraData == data) {
+        GEvent event = { eventName, el.data, el.extraData };
+        el.handler(event);
+    }
+    return true;    // disable next event handling
+}
+
+
 //-----------------------------------------------------------------------------
 // GTask
 //-----------------------------------------------------------------------------
@@ -108,6 +124,26 @@ void GTask::setState(unsigned state)
     }
 }
 
+void GTask::on(const char *eventName, GEvent::Handler handler, void *data)
+{
+    adk::_taskEventEmitter.on(eventName, handler, data, (unsigned long)this);
+}
+
+void GTask::off(const char *eventName, GEvent::Handler handler)
+{
+    adk::_taskEventEmitter.off(eventName, handler);
+}
+
+void GTask::once(const char *eventName, GEvent::Handler handler, void *data)
+{
+    adk::_taskEventEmitter.once(eventName, handler, data, (unsigned long)this);
+}
+
+void GTask::emit(const char *eventName)
+{
+    GEventQ *evQ = (GEventQ *)adk::_taskEventEmitter.findEventQ(eventName);
+    if (evQ) evQ->processEvents(_taskEventProcessor, (unsigned long)this);
+}
 
 
 //-----------------------------------------------------------------------------
@@ -186,9 +222,4 @@ GTask *GTaskManager::nextOf(GTask *pCurrent) {
 
 unsigned GTaskManager::taskCount() {
     return GTask::s_taskCount;
-}
-
-
-namespace adk {
-    GTaskManager taskManager;
 }

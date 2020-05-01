@@ -6,7 +6,7 @@
 
 #include "gtimer.h"
 
-using event_listener = adk::GEventQ::event_listener;
+using event_listener = GEventQ::event_listener;
 
 static GQue _timerEventQ(GTimer::TIMER_EVENT_QUE_SIZE, sizeof(event_listener));
 

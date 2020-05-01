@@ -1,6 +1,6 @@
 #include "ardukit.h"
 
-const int TASK_COUNT = 3;
+const int TASK_COUNT = 10;
 GTask tasks[TASK_COUNT];
 
 void eventHandler(GEvent &e) {

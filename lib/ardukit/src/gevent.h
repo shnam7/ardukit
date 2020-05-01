@@ -8,9 +8,13 @@
 #include "gque.h"
 #include "glist.h"
 
-namespace adk {
+#ifndef MAX_EVENT_NAME_LENGTH
+#define MAX_EVENT_NAME_LENGTH   15
+#endif
 
-const int MAX_EVENT_NAME_LENGTH = 15;
+//-----------------------------------------------------------------------------
+//  class GEvent
+//-----------------------------------------------------------------------------
 class GEvent {
 protected:
     const char          *m_eventName;
@@ -41,6 +45,7 @@ public:
         unsigned long       extraData;      // extra data
         bool                once;
     } event_listener;
+    typedef bool (*event_processor)(const char *eventName, event_listener& el, unsigned long data);
 
 protected:
     char    m_eventName[MAX_EVENT_NAME_LENGTH+1];
@@ -52,7 +57,7 @@ public:
     bool addListener(GEvent::Handler handler, void *data = 0,
                      unsigned long extraData = 0, bool once = false);
     void removeListener(GEvent::Handler handler);
-    void processEvents();
+    void processEvents(event_processor eventProcessor=0, unsigned long data=0);
 
     const char *eventName() { return m_eventName; }
 };
@@ -80,13 +85,9 @@ public:
 
     void emit(const char *eventName);
 
+    GEventQ *findEventQ(const char *eventName);
+
 protected:
     void _on(const char *eventName, GEvent::Handler handler, void *data = 0,
              unsigned long extraData = 0, bool once = false);
-    GEventQ *_findEventQ(const char *eventName);
 };
-
-} // namespace adk
-
-using GEvent = adk::GEvent;
-using GEventEmitter = adk::GEventEmitter;
