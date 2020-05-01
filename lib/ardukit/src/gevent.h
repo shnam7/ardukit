@@ -56,7 +56,7 @@ public:
 
     bool addListener(GEvent::Handler handler, void *data = 0,
                      unsigned long extraData = 0, bool once = false);
-    void removeListener(GEvent::Handler handler);
+    void removeListener(GEvent::Handler handler, unsigned long extraData=0);
     void processEvents(event_processor eventProcessor=0, unsigned long data=0);
 
     const char *eventName() { return m_eventName; }

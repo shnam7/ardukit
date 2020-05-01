@@ -24,12 +24,13 @@ bool GEventQ::addListener(GEvent::Handler handler, void *data,
     return put(&entry);
 }
 
-void GEventQ::removeListener(GEvent::Handler handler) {
+void GEventQ::removeListener(GEvent::Handler handler, unsigned long extraData) {
     event_listener el;
     unsigned len = gque::length();
+    if (!extraData) extraData = el.extraData;
     while (len-- > 0) {
         gque::get(&el);
-        if (el.handler != handler) gque::put(&el);
+        if (el.handler != handler && extraData==el.extraData) gque::put(&el);
     }
 }
 

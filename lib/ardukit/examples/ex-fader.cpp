@@ -19,13 +19,15 @@ public:
     }
 
 protected:
-    virtual void run() {
+    virtual void run()
+    {
         analogWrite(m_pinID, m_value);
         m_value += m_delta;
         if (m_value > 255) {
             m_value = 255;
             m_delta = -m_delta;
-        } else if (m_value < 0) {
+        }
+        else if (m_value < 0) {
             m_value = 0;
             m_delta = -m_delta;
         }
@@ -35,19 +37,22 @@ protected:
     }
 };
 
+
 const int LED_COUNT = 6;
 const int LED_PINS[LED_COUNT] = {3, 5, 6, 9, 10, 11};
 Fader faders[LED_COUNT];
 
-void setup() {
+void setup()
+{
     Serial.begin(9600);
 
-    for (int i=0; i<LED_COUNT; i++) {
+    for (int i = 0; i < LED_COUNT; i++) {
         faders[i].config(LED_PINS[i]);
         faders[i].start(i * 200);
     }
 }
 
-void loop() {
+void loop()
+{
     adk::run();
 }

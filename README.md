@@ -18,11 +18,13 @@ Ardukit is a foundation library toolkit for easier arduino programming.
 ```cpp
 GTask t1, t2, t3;
 
-void taskFunc(GTask &t) {
+void taskFunc(GTask &t)
+{
     dmsg("Task %d is running. tick=%ld", t.taskID(), GTimer::uticks());
 }
 
-void setup() {
+void setup()
+{
     Serial.begin(128000);
 
     // init tasks
@@ -31,7 +33,8 @@ void setup() {
     t3.bind(taskFunc, 3000).start();    // periodic task w/ interval=3sec
 }
 
-void loop() {
+void loop()
+{
     adk::run();
 }
 ```
@@ -42,7 +45,8 @@ GTask has an event emitter embedded, and emitts "prepare", "start", "sleep", "aw
 
 GTask t1, t2;
 
-void eventHandler(GEvent &e) {
+void eventHandler(GEvent &e)
+{
     GTask &task = *(GTask *)e.data();
     unsigned taskID = task.taskID();
     tick_t tm = GTimer::uticks();
@@ -58,11 +62,13 @@ void eventHandler(GEvent &e) {
     }
 }
 
-void taskFunc(GTask &t) {
+void taskFunc(GTask &t)
+{
     t.sleep(1000);
 }
 
-void setup() {
+void setup()
+{
     Serial.begin(128000);
 
     // set up event listeners
@@ -79,7 +85,8 @@ void setup() {
     t2.bind(taskFunc, 2000).start();
 }
 
-void loop() {
+void loop()
+{
     adk::run();
 }
 ```
@@ -91,19 +98,22 @@ void loop() {
 int brightness = 0;
 int delta = 5;
 
-void setLED(GEvent &e) {
+void setLED(GEvent &e)
+{
     dmsg("LED brightness: %d", brightness);
     brightness += delta;
     if (brightness == 255 || brightness == 0) delta = -delta;
     GTimer::setTimeout(setLED, 10);
 }
 
-void setup() {
+void setup()
+{
     Serial.begin(128000);
     GTimer::setTimeout(setLED);
 }
 
-void loop() {
+void loop()
+{
     adk::run();
 }
 ```
@@ -139,4 +149,4 @@ Check [here](lib/ardukit)
 
 
 ## Examples
-To test examples, copy one from lib/ardukit/examples directory to src/.
+To test examples, copy one from "lib/ardukit/examples" directory to "src/".

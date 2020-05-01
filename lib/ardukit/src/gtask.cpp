@@ -131,7 +131,8 @@ void GTask::on(const char *eventName, GEvent::Handler handler, void *data)
 
 void GTask::off(const char *eventName, GEvent::Handler handler)
 {
-    adk::_taskEventEmitter.off(eventName, handler);
+    GEventQ *evQ = (GEventQ *)adk::_taskEventEmitter.findEventQ(eventName);
+    if (evQ) evQ->removeListener(handler, (unsigned long)this);
 }
 
 void GTask::once(const char *eventName, GEvent::Handler handler, void *data)

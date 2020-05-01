@@ -43,6 +43,8 @@ int suspendCount = 0;
 void fadeRestarter(GEvent &e)
 {
     if (++suspendCount < LED_COUNT) return;
+    isReverse = !isReverse;
+    suspendCount = 0;
 
     int step = isReverse ? -trailerSize : trailerSize;
     int delay = isReverse ? trailerSize * LED_COUNT : 0;
@@ -50,8 +52,6 @@ void fadeRestarter(GEvent &e)
         faders[i].resume(delay);
         delay += step;
     }
-    isReverse = !isReverse;
-    suspendCount = 0;
 }
 
 void setup()
