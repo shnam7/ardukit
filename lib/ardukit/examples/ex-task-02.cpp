@@ -1,6 +1,7 @@
 #include "ardukit.h"
 
-GTask t1, t2;
+const int TASK_COUNT = 3;
+GTask tasks[TASK_COUNT];
 
 void eventHandler(GEvent &e) {
     GTask &task = *(GTask *)e.data();
@@ -25,18 +26,13 @@ void taskFunc(GTask &t) {
 void setup() {
     Serial.begin(128000);
 
-    // set up event listeners
-    t1.on("start", eventHandler, &t1);
-    t1.on("sleep", eventHandler, &t1);
-    t1.on("awake", eventHandler, &t1);
-
-    t2.on("start", eventHandler, &t2);
-    t2.on("sleep", eventHandler, &t2);
-    t2.on("awake", eventHandler, &t2);
-
-    // now start tasks
-    t1.bind(taskFunc, 1000).start();    // bind() returns GTask itself
-    t2.bind(taskFunc, 2000).start();
+    for (int i=0; i<TASK_COUNT; i++) {
+        GTask &t = tasks[i];
+        t.on("start", eventHandler, &t);
+        t.on("sleep", eventHandler, &t);
+        t.on("awake", eventHandler, &t);
+        t.bind(taskFunc, (i+1) * 1000).start();    // bind() returns GTask itself
+    }
 }
 
 void loop() {
