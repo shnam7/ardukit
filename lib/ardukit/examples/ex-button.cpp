@@ -10,7 +10,7 @@ GButton b1(8, INPUT_PULLUP);
 void setup()
 {
     Serial.begin(128000);
-    b1.enable();
+    b1.enable();    // activate change detection
     b1.on("press", onButtonEvent);
     b1.on("releas", onButtonEvent);
 }

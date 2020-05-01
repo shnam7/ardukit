@@ -1,0 +1,28 @@
+{
+    "name": "ardukit",
+    "keywords": "task, queue, list, event, button, edge trigger, timer",
+    "description": "Foundation library toolkit for easier arduino programming",
+    "repository":
+    {
+      "type": "git",
+      "url": "https://github.com/shnam7/ardukit.git"
+    },
+    "authors":
+    [
+      {
+        "name": "Robin Nam",
+        "email": "shnam7@gmail.com",
+        "url": "http://www.windron.com/simplete",
+        "maintainer": true
+      },
+      {
+        "name": "Hyeonmin Lee",
+        "url": "http://www.windron.com/hmlee7",
+        "email": "hmlee7@gmail.com"
+      }
+    ],
+    "dependencies": [],
+    "version": "1.0.0",
+    "frameworks": "arduino",
+    "platforms": "*"
+}

@@ -1,4 +1,3 @@
-
 #include "ardukit.h"
 
 void fadeRestarter(GEvent &e);

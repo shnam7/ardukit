@@ -1,4 +1,3 @@
-
 #include "ardukit.h"
 
 tick_t msecStart = GTimer::ticks();

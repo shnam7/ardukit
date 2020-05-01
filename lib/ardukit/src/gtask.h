@@ -13,6 +13,7 @@ class GTaskManager;
 
 //-----------------------------------------------------------------------------
 //  GTask
+//  events triggered: "prepare", "start", "sleep", "awake", "suspend", "resume"
 //-----------------------------------------------------------------------------
 class GTask : public GEventEmitter {
 public:
