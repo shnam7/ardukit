@@ -3,12 +3,12 @@
 using namespace adk;
 
 const int       TASK_COUNT = 5;
-task            tasks[TASK_COUNT];
-event_emitter   *evm[TASK_COUNT];
+Task            tasks[TASK_COUNT];
+EventEmitter   *evm[TASK_COUNT];
 
-void event_handler(event_emitter::event &e)
+void event_handler(EventEmitter::event &e)
 {
-    task &t = *(task *)e.data;
+    Task &t = *(Task *)e.data;
     unsigned task_id = t.task_id();
     tick_t tm = ticks();
 
@@ -23,7 +23,7 @@ void event_handler(event_emitter::event &e)
     }
 }
 
-void task_func(task &t)
+void task_func(Task &t)
 {
     t.sleep(1000);
 }
@@ -33,8 +33,8 @@ void setup()
     Serial.begin(9600);
 
     for (int i = 0; i < TASK_COUNT; i++) {
-        evm[i] = new event_emitter(3, 5);
-        task &t = tasks[i];
+        evm[i] = new EventEmitter(3, 5);
+        Task &t = tasks[i];
         t.set_interval((i + 1) * 1000)
             .set_event_emitter(evm[i])
             .on("start", event_handler, &t)

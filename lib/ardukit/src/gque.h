@@ -9,8 +9,10 @@
 
 namespace adk {
 
-//--- generic cuicular queue
-class circular_queue {
+//--------------------------------------------------------------------
+//	class CircularQueue
+//--------------------------------------------------------------------
+class CircularQueue {
 protected:
     typedef struct {
         unsigned begin;     // constant: start of que (end of que contro block)
@@ -24,9 +26,9 @@ protected:
     // template<class T> friend class que;
 
 public:
-    circular_queue() {}
-    circular_queue(unsigned capacity, unsigned item_size) { init(capacity, item_size); }
-    ~circular_queue();
+    CircularQueue() {}
+    CircularQueue(unsigned capacity, unsigned item_size) { init(capacity, item_size); }
+    ~CircularQueue();
 
 	bool init(unsigned capacity, unsigned item_size);
     void clear() const { if (m_q) { m_q->head = m_q->tail = m_q->begin; } }
@@ -62,19 +64,21 @@ protected:
 };
 
 
-//--- typed (circular) queue
+//--------------------------------------------------------------------
+//	class Queue - typed (circular) queue
+//--------------------------------------------------------------------
 template <class T>
-class queue : public circular_queue {
+class Queue : public CircularQueue {
 public:
-    queue() {}
-    queue(unsigned capacity): circular_queue(capacity, sizeof(T)) {}
+    Queue() {}
+    Queue(unsigned capacity): CircularQueue(capacity, sizeof(T)) {}
 
-    bool init(unsigned capacity) { return circular_queue::init(capacity, sizeof(T)); };
+    bool init(unsigned capacity) { return CircularQueue::init(capacity, sizeof(T)); };
 
-	bool put(const T *item=0) const { return circular_queue::put(item); }
-	bool get(T *item=0) const { return circular_queue::get(item); }
-	bool push(const T *item=0) const { return circular_queue::push(item); }
-	bool pop(T *item=0) const { return circular_queue::pop(item); }
+	bool put(const T *item=0) const { return CircularQueue::put(item); }
+	bool get(T *item=0) const { return CircularQueue::get(item); }
+	bool push(const T *item=0) const { return CircularQueue::push(item); }
+	bool pop(T *item=0) const { return CircularQueue::pop(item); }
 
     //--- support reference type interface
     bool put(const T &item) const { return put(&item); }
@@ -82,17 +86,17 @@ public:
 	bool push(const T &item) const { return push(&item); }
 	bool pop(T &item) const { return pop(&item); }
 
-    T *first() const { return (T *)circular_queue::first(); }
-    T *last() const { return (T *)circular_queue::last(); }
-    T *peek() const { return (T *)circular_queue::peek(); }
-	T *peek_next(const T *peek=0) const { return (T *)circular_queue::peek_next(peek); }
-	T *peek_prev(const T *peek=0) const { return (T *)circular_queue::peek_prev(peek); }
+    T *first() const { return (T *)CircularQueue::first(); }
+    T *last() const { return (T *)CircularQueue::last(); }
+    T *peek() const { return (T *)CircularQueue::peek(); }
+	T *peek_next(const T *peek=0) const { return (T *)CircularQueue::peek_next(peek); }
+	T *peek_prev(const T *peek=0) const { return (T *)CircularQueue::peek_prev(peek); }
 
 	//--- accessors
-	T *head() const { return (T *)circular_queue::head(); }
-	T *tail() const { return (T *)circular_queue::tail(); }
-	T *begin() const { return (T *)circular_queue::begin(); }
-	T *end() const { return (T *)circular_queue::end(); }
+	T *head() const { return (T *)CircularQueue::head(); }
+	T *tail() const { return (T *)CircularQueue::tail(); }
+	T *begin() const { return (T *)CircularQueue::begin(); }
+	T *end() const { return (T *)CircularQueue::end(); }
 };
 
 

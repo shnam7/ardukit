@@ -11,17 +11,17 @@
 using namespace adk;
 
 //--------------------------------------------------------------------
-//	class circular_queue
+//	class CircularQueue
 //--------------------------------------------------------------------
-circular_queue::~circular_queue()
+CircularQueue::~CircularQueue()
 {
     if (m_q) delete[] m_q;
     m_q = 0;
 }
 
-bool circular_queue::init(unsigned capacity, unsigned item_size)
+bool CircularQueue::init(unsigned capacity, unsigned item_size)
 {
-    if (circular_queue::capacity() == capacity) { clear(); return true; }
+    if (CircularQueue::capacity() == capacity) { clear(); return true; }
 
     if (capacity == 0) {
         if (m_q) delete [] m_q;
@@ -31,7 +31,7 @@ bool circular_queue::init(unsigned capacity, unsigned item_size)
     unsigned buf_size = sizeof(cque_t) + (capacity + 1) * item_size;
 	m_q = (cque_t *)new char[buf_size];
     if (!m_q) {
-        dmsg("circular_queue::init: memory allocation error.");
+        dmsg("CircularQueue::init: memory allocation error.");
         return false;
     }
     // init que
@@ -47,7 +47,7 @@ bool circular_queue::init(unsigned capacity, unsigned item_size)
 }
 
 // append
-bool circular_queue::put(const void *item) const
+bool CircularQueue::put(const void *item) const
 {
     if (!m_q) return false;
 	unsigned npos = m_q->tail + m_q->item_size;
@@ -59,7 +59,7 @@ bool circular_queue::put(const void *item) const
 }
 
 // pop from head
-bool circular_queue::get(void *item) const
+bool CircularQueue::get(void *item) const
 {
     if (!m_q || m_q->head == m_q->tail ) return false;  // empty
 
@@ -70,7 +70,7 @@ bool circular_queue::get(void *item) const
 }
 
 // prepend
-bool circular_queue::push(const void *item) const
+bool CircularQueue::push(const void *item) const
 {
     if (!m_q) return false;
 	unsigned pos = m_q->head - m_q->item_size;
@@ -82,7 +82,7 @@ bool circular_queue::push(const void *item) const
 }
 
 // pop from tail
-bool circular_queue::pop(void *item) const
+bool CircularQueue::pop(void *item) const
 {
     if (!m_q || m_q->head == m_q->tail ) return false;  // empty
 
@@ -91,7 +91,7 @@ bool circular_queue::pop(void *item) const
     return true;
 }
 
-void *circular_queue::peek_next(const void *peek) const
+void *CircularQueue::peek_next(const void *peek) const
 {
     if (is_empty()) return 0;
     if (peek == 0) return _ptr(m_q->head);   // return first entry
@@ -104,7 +104,7 @@ void *circular_queue::peek_next(const void *peek) const
     return (void *)peek;
 }
 
-void *circular_queue::peek_prev(const void *peek) const
+void *CircularQueue::peek_prev(const void *peek) const
 {
     if (is_empty()) return 0;
     if (peek == 0) return _ptr(m_q->tail - m_q->item_size);             // return last entry
@@ -116,7 +116,7 @@ void *circular_queue::peek_prev(const void *peek) const
     return (void *)peek;
 }
 
-bool circular_queue::is_full() const
+bool CircularQueue::is_full() const
 {
     if (!m_q) return true;  // zero capacity
 	unsigned npos = m_q->tail + m_q->item_size;
@@ -124,7 +124,7 @@ bool circular_queue::is_full() const
 	return npos == m_q->head;
 }
 
-unsigned circular_queue::length() const
+unsigned CircularQueue::length() const
 {
     if (!m_q) return 0;
     unsigned n = (m_q->head <= m_q->tail)
@@ -133,7 +133,7 @@ unsigned circular_queue::length() const
     return n / m_q->item_size;
 }
 
-unsigned circular_queue::available() const
+unsigned CircularQueue::available() const
 {
     if (!m_q) return 0;
 	int n = ( m_q->head>m_q->tail ) ? (m_q->head-m_q->tail)
@@ -141,7 +141,7 @@ unsigned circular_queue::available() const
 	return (n / m_q->item_size) - 1;
 }
 
-unsigned circular_queue::capacity() const
+unsigned CircularQueue::capacity() const
 {
     return m_q ? ((m_q->end - m_q->begin) / m_q->item_size) - 1 : 0;
 }

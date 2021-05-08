@@ -1,11 +1,11 @@
 #include "ardukit.h"
 
-void on_button_event(adk::event_emitter::event &e)
+void on_button_event(adk::EventEmitter::event &e)
 {
     dmsg("Button Event: %s", e.name);
 };
 
-GButton b1(8, INPUT_PULLUP);
+adk::Button b1(8, INPUT_PULLUP);
 
 void setup()
 {

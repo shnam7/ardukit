@@ -1,7 +1,7 @@
 /**
  *  @package Ardukit
  *
- *  @module list - doubly linked list
+ *  @module List - doubly linked list
  */
 
 #pragma once
@@ -10,46 +10,46 @@
 namespace adk {
 
 //-----------------------------------------------------------------------------
-// class linkable
+// class Linkable
 //-----------------------------------------------------------------------------
-class linkable {
+class Linkable {
 protected:
-    linkable       *m_prev = this;
-    linkable       *m_next = this;
+    Linkable       *m_prev = this;
+    Linkable       *m_next = this;
 
 public:
-    linkable() {}
-    ~linkable() { detach(); }
+    Linkable() {}
+    ~Linkable() { detach(); }
 
-    void append(linkable *node);
-    void prepend(linkable *node) { node->append(this); }
-    void append_to(linkable *node) { node->append(this); }
-    void prepend_to(linkable *node) { node->prepend(this); }
+    void append(Linkable *node);
+    void prepend(Linkable *node) { node->append(this); }
+    void append_to(Linkable *node) { node->append(this); }
+    void prepend_to(Linkable *node) { node->prepend(this); }
     void detach() { m_prev->m_next = m_next; m_next->m_prev = m_prev; }
 
-    void add(linkable *node) { append(node); }
-    void remove(linkable *node) { node->detach(); }
+    void add(Linkable *node) { append(node); }
+    void remove(Linkable *node) { node->detach(); }
 
-    linkable *next() const { return m_next; }
-    linkable *prev() const { return m_prev; }
+    Linkable *next() const { return m_next; }
+    Linkable *prev() const { return m_prev; }
 
     bool is_alone() const { return m_next == this; }
     unsigned length() const;  // count the length of the list excluding itself
 };
 
 template <class T = void>
-class list : protected linkable {
+class List : protected Linkable {
 public:
-    list() {}
-    ~list() {}
+    List() {}
+    ~List() {}
 
-    void append(T *node) { linkable::append(node); };
-    void prepend(T *node) { linkable::prepend(node);; }
-    void add(T *node) { linkable::add(node); }
-    void remove(T *node) { linkable::remove(node); }
+    void append(T *node) { Linkable::append(node); };
+    void prepend(T *node) { Linkable::prepend(node);; }
+    void add(T *node) { Linkable::add(node); }
+    void remove(T *node) { Linkable::remove(node); }
 
-    T *first() { return is_empty() ? 0 : (T *)linkable::next(); }
-    T *last() { return is_empty() ? 0 : (T *)linkable::prev(); }
+    T *first() { return is_empty() ? 0 : (T *)Linkable::next(); }
+    T *last() { return is_empty() ? 0 : (T *)Linkable::prev(); }
 
     T *next_of(T *node = 0) {
         T *item = node ? (T *)node->next() : first();
@@ -61,8 +61,8 @@ public:
         return item == ( T *)this ? 0 : item;
     }
 
-    unsigned is_empty() { return linkable::is_alone(); }
-    unsigned length() { return linkable::length(); }
+    unsigned is_empty() { return Linkable::is_alone(); }
+    unsigned length() { return Linkable::length(); }
 };
 
 } // namespace adk

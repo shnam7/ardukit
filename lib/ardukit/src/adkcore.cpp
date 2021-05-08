@@ -12,5 +12,5 @@ using namespace adk;
 
 void adk::run() {
     timer_helpers::run_timer();
-    task::schedule();
+    Task::schedule();
 }

@@ -1,7 +1,7 @@
 /**
  *  @package Ardukit
  *
- *  @module task - periodic tasks
+ *  @module Task - periodic tasks
  */
 
 #include "gtask.h"
@@ -11,31 +11,31 @@
 using namespace adk;
 
 //-----------------------------------------------------------------------------
-// class task
+// class Task
 //-----------------------------------------------------------------------------
-unsigned task::__task_count = 0;
-task    *task::__head = 0;    // head of task list
-task    *task::__cur = 0;     // pointer to current task
+unsigned Task::__task_count = 0;
+Task    *Task::__head = 0;    // head of task list
+Task    *Task::__cur = 0;     // pointer to current task
 
-task::task(msec_t interval) : m_id(++__task_count), m_interval(interval)
+Task::Task(msec_t interval) : m_id(++__task_count), m_interval(interval)
 {
     // add to tsask list
     if (!__head) {
         __head = this;
     } else {
-        task *tail = __head;
+        Task *tail = __head;
         while (tail->m_next) tail = tail->m_next;
         tail->m_next = this;
     }
     if (!__cur) __cur = __head;
 }
 
-task::~task()
+Task::~Task()
 {
     // remove from the task list
     if (__head) {
-        task *prev = __head;
-        task *curr = __head->m_next;
+        Task *prev = __head;
+        Task *curr = __head->m_next;
         while (curr) {
             if (curr == this) break;
             prev = curr;
@@ -49,7 +49,7 @@ task::~task()
     --__task_count;
 }
 
-task& task::start(task_func func, void *data)
+Task& Task::start(task_func func, void *data)
 {
     if (m_state == _INIT) _set_state(_PREPARE);
     if (m_state != _PREPARE) return *this;
@@ -61,7 +61,7 @@ task& task::start(task_func func, void *data)
     return *this;
 }
 
-task& task::start(msec_t delay_msec)
+Task& Task::start(msec_t delay_msec)
 {
     if (m_state == _INIT) _set_state(_PREPARE);
     if (m_state != _PREPARE) return *this;
@@ -71,14 +71,14 @@ task& task::start(msec_t delay_msec)
     return *this;
 }
 
-task& task::sleep(msec_t msec)
+Task& Task::sleep(msec_t msec)
 {
     if (m_state != _SLEEPING) _set_state(_SLEEPING);
     schedule_next(msec);
     return *this;
 }
 
-task& task::awake(msec_t delay_msec)
+Task& Task::awake(msec_t delay_msec)
 {
     if (m_state != _SLEEPING) return *this;
     _set_state(_RUNNING);
@@ -86,14 +86,14 @@ task& task::awake(msec_t delay_msec)
     return *this;
 }
 
-task& task::suspend()
+Task& Task::suspend()
 {
     if (m_state == _SUSPENDED) return *this;
     _set_state(_SUSPENDED);
     return *this;
 }
 
-task& task::resume(msec_t delay_msec)
+Task& Task::resume(msec_t delay_msec)
 {
     if (m_state != _SUSPENDED) return *this;
     _set_state(_RUNNING);
@@ -101,18 +101,18 @@ task& task::resume(msec_t delay_msec)
     return *this;
 }
 
-void task::schedule_next(msec_t delay_msec)
+void Task::schedule_next(msec_t delay_msec)
 {
     if (delay_msec==0) delay_msec = m_interval;
     m_next_run = ticks() + msec_to_ticks(delay_msec);
 }
 
-void task::run()
+void Task::run()
 {
     if (m_func) m_func(*this);
 }
 
-void task::_set_state(unsigned state)
+void Task::_set_state(unsigned state)
 {
     if (m_state == state) return;
 
@@ -151,7 +151,7 @@ void task::_set_state(unsigned state)
     }
 }
 
-void task::schedule() {
+void Task::schedule() {
     if (!__cur) return;
 
     switch (__cur->m_state) {

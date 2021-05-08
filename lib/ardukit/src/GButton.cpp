@@ -1,37 +1,39 @@
 /**
  *  @package Ardukit
  *
- *  @module GButton - Noise filteriing input button
+ *  @module Button - Noise filteriing input button
  */
 
 #include "platform.h"
 #include "gtime.h"
 #include "gtimer.h"
-#include "GButton.h"
+#include "gbutton.h"
+
+using namespace adk;
 
 const int SCAN_INTERVAL = 20;   // msec
 
 //-----------------------------------------------------------------------------
-//  class GButton
+//  class Button
 //-----------------------------------------------------------------------------
-GButton::GButton(int pin_id, int io_type, int sensitivity)
+Button::Button(int pin_id, int io_type, int sensitivity)
     : m_pin_id(pin_id), m_io_type(io_type), m_sensitivity(sensitivity)
 {
     if (m_sensitivity < 0) m_sensitivity = 0;
 }
 
-GButton::~GButton() {
+Button::~Button() {
 }
 
-void GButton::enable(int pin_id) {
+void Button::enable(int pin_id) {
     if (pin_id >= 0) m_pin_id = pin_id;
     if (m_io_type == INPUT_PULLUP) digitalWrite(m_pin_id, INPUT_PULLUP);
-    adk::set_timeout(scan, SCAN_INTERVAL, this);
+    set_timeout(scan, SCAN_INTERVAL, this);
     m_enabled = true;
 }
 
-void GButton::scan(void *data) {
-    GButton *btn = (GButton *)data;
+void Button::scan(void *data) {
+    Button *btn = (Button *)data;
     int delta = digitalRead(btn->m_pin_id) > 0 ? 1 : -1;
     if (btn->m_io_type == INPUT_PULLUP) delta = -delta;
 
@@ -50,5 +52,5 @@ void GButton::scan(void *data) {
         btn->emit("releas");
     }
     // dmsg("scan: interval=%d, cur==%d isPressed=%d", btn->m_sensitivity, cur, btn->isPressed());
-    if (btn->m_enabled) adk::set_timeout(scan, SCAN_INTERVAL, btn);
+    if (btn->m_enabled) set_timeout(scan, SCAN_INTERVAL, btn);
 }

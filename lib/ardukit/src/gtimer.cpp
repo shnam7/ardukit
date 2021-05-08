@@ -19,7 +19,7 @@ struct eblock {
 };
 
 static unsigned         _counter = 0;
-static queue<eblock>    _eque(MAX_CALL_STACK);
+static Queue<eblock>    _eque(MAX_CALL_STACK);
 
 void clear_timeout(unsigned id)
 {

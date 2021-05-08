@@ -19,5 +19,5 @@
 #include "gevent.h"
 #include "gtask.h"
 
-#include "GEdgeTrigger.h"
-#include "GButton.h"
+#include "gedge_trigger.h"
+#include "gbutton.h"

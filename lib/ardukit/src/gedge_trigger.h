@@ -1,7 +1,7 @@
 /**
  *  @package Ardukit
  *
- *  @module GEdgeTrigger - Analog input edge detector
+ *  @module EdgeTrigger - Analog input edge detector
  *  @#notes
  *    - events: 'rising', 'falling'
  */
@@ -10,20 +10,22 @@
 
 #include "gevent.h"
 
+namespace adk {
+
 //-----------------------------------------------------------------------------
-//  class GEdgeTrigger
+//  class EdgeTrigger
 //-----------------------------------------------------------------------------
-class GEdgeTrigger : public adk::event_emitter {
+class EdgeTrigger : public EventEmitter {
 protected:
     int     m_low_threshould;
     int     m_high_threshould;
     bool    m_is_high = false;
 
 public:
-    GEdgeTrigger(int low_threshould=5, int high_threshould=250, int max_listeners=5)
-        : event_emitter(2, max_listeners), m_low_threshould(low_threshould),
+    EdgeTrigger(int low_threshould=5, int high_threshould=250, int max_listeners=5)
+        : EventEmitter(2, max_listeners), m_low_threshould(low_threshould),
         m_high_threshould(high_threshould) {}
-    ~GEdgeTrigger() {}
+    ~EdgeTrigger() {}
 
     void set_threshoulds(int low_threshould, int high_threshould)
         { m_low_threshould = low_threshould; m_high_threshould = high_threshould; m_is_high = false; }
@@ -31,3 +33,5 @@ public:
 
     void detect_edge(int value);
 };
+
+}   // namespaec adk

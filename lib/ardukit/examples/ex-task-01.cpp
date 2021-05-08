@@ -2,9 +2,9 @@
 
 using namespace adk;
 
-task t1, t2, t3;
+Task t1, t2, t3;
 
-void task_func(task &t)
+void task_func(Task &t)
 {
     dmsg("Task %d is running. tick=%ld", t.task_id(), ticks());
 }

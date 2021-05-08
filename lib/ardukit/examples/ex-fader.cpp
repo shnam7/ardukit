@@ -1,6 +1,6 @@
 #include "ardukit.h"
 
-class Fader : public adk::task {
+class Fader : public adk::Task {
 protected:
     int m_pinID         = 0;
     int m_value         = 0;

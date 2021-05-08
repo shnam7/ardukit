@@ -11,10 +11,9 @@
 namespace adk {
 
 //-----------------------------------------------------------------------------
-//  class event_emitter
+//  class EventEmitter
 //-----------------------------------------------------------------------------
-
-class event_emitter {
+class EventEmitter {
 public:
     static const int EVENT_NAME_LENGTH_MAX     = 15;
 
@@ -35,13 +34,13 @@ protected:
     // struct event_name { char name[EVENT_NAME_LENGTH_MAX + 1]; } event_name;
     typedef char event_name_t[EVENT_NAME_LENGTH_MAX+1];
 
-    queue<event_name_t>     m_names;
-    queue<event_block>      m_listeners;
+    Queue<event_name_t>     m_names;
+    Queue<event_block>      m_listeners;
 
 public:
-    event_emitter(unsigned max_event_names=6, unsigned max_listeners=5)
+    EventEmitter(unsigned max_event_names=6, unsigned max_listeners=5)
         : m_names(max_event_names), m_listeners(max_listeners) {}
-    ~event_emitter() {}
+    ~EventEmitter() {}
 
     bool init(unsigned max_event_names=10, unsigned max_listeners=10)
         { return m_names.init(max_event_names) && m_listeners.init(max_listeners); }
@@ -67,6 +66,6 @@ protected:
     void __squeez_listeners();
 };
 
-// using event = event_emitter::event;
+// using event = EventEmitter::event;
 
 } // namespace adk

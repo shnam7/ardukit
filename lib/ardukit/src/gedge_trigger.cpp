@@ -1,15 +1,17 @@
 /**
  *  @package Ardukit
  *
- *  @module GEdgeTrigger - Analog input edge detector
+ *  @module EdgeTrigger - Analog input edge detector
  */
 
-#include "GEdgeTrigger.h"
+#include "gedge_trigger.h"
+
+using namespace adk;
 
 //-----------------------------------------------------------------------------
 //  class GEdgeErigger
 //-----------------------------------------------------------------------------
-void GEdgeTrigger::detect_edge(int value) {
+void EdgeTrigger::detect_edge(int value) {
     if (m_is_high) {
         if (value <= m_low_threshould) {
             m_is_high = false;

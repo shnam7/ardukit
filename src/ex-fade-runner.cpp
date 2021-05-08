@@ -2,15 +2,15 @@
 
 using namespace adk;
 
-void fade_restarter(event_emitter::event &e);
+void fade_restarter(EventEmitter::event &e);
 
 //--- LEDFader
-class LEDFader : public task  {
+class LEDFader : public Task  {
 protected:
     int             m_pinID = -1;
     int             m_brightness = 255;
     int             m_stepSize = 5;
-    event_emitter   m_emitter;
+    EventEmitter   m_emitter;
 
 public:
     LEDFader() : m_emitter(1, 2) { set_event_emitter(m_emitter); }
@@ -43,7 +43,7 @@ LEDFader faders[LED_COUNT];
 bool isReverse = false;
 int suspendCount = 0;
 
-void fade_restarter(event_emitter::event &e)
+void fade_restarter(EventEmitter::event &e)
 {
     if (++suspendCount < LED_COUNT) return;
 

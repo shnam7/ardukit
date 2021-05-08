@@ -1,17 +1,17 @@
 #include "ardukit.h"
 #include <SoftwareSerial.h>
 
-using event = adk::event_emitter::event;
+using namespace adk;
 
 SoftwareSerial mySoftwareSerial(10, 11);
-GEdgeTrigger sensor1;
+EdgeTrigger sensor1;
 
-void on_rising(event &)
+void on_rising(EventEmitter::event&)
 {
     dmsg("------------------------> Rise triggered");
 }
 
-void on_falling(event&)
+void on_falling(EventEmitter::event&)
 {
     dmsg("++++++++++++++++++++++++> Fall triggered");
 }
