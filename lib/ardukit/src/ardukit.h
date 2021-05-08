@@ -8,9 +8,11 @@
 
 #include "platform.h"
 #include "adkdef.h"
+#include "adkcore.h"
 
 #include "gmath.h"
 #include "gutil.h"
+#include "gtime.h"
 #include "gtimer.h"
 
 #include "gque.h"

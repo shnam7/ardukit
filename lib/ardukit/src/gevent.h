@@ -8,86 +8,65 @@
 #include "gque.h"
 #include "glist.h"
 
-#ifndef MAX_EVENT_NAME_LENGTH
-#define MAX_EVENT_NAME_LENGTH   15
-#endif
+namespace adk {
 
 //-----------------------------------------------------------------------------
-//  class GEvent
+//  class event_emitter
 //-----------------------------------------------------------------------------
-class GEvent {
-protected:
-    const char          *m_eventName;
-    const void          *m_data;;
-    unsigned long       m_extraData;
 
+class event_emitter {
 public:
-    GEvent(const char *eventName, void *data, unsigned long extraData)
-        : m_eventName(eventName), m_data(data), m_extraData(extraData) {}
-    ~GEvent() {}
+    static const int EVENT_NAME_LENGTH_MAX     = 15;
 
-    const char *eventName() { return m_eventName; }
-    const void *data() { return m_data; }
-    unsigned long extraData() { return m_extraData; }
+    struct                  event_block;
+    typedef event_block     event;
+    typedef void            (*event_listener)(event&);
 
-    typedef void (*Handler)(GEvent &e);
-};
-
-
-//-----------------------------------------------------------------------------
-//  class GEventQ
-//-----------------------------------------------------------------------------
-class GEventQ : public adk::list<GEventQ>::node, public adk::gque {
-public:
-    typedef struct {
-        GEvent::Handler     handler;        // event handler
-        void                *data;          // user data
-        unsigned long       extraData;      // extra data
+    struct event_block {
+        const char          *name;
+        event_listener      listener;
+        void                *data;
+        u64_t               data_ex;        // extra data;
         bool                once;
-    } event_listener;
-    typedef bool (*event_processor)(const char *eventName, event_listener& el, unsigned long data);
+    };
+
 
 protected:
-    char    m_eventName[MAX_EVENT_NAME_LENGTH+1];
-    friend class GEventEmitter;
+    // struct event_name { char name[EVENT_NAME_LENGTH_MAX + 1]; } event_name;
+    typedef char event_name_t[EVENT_NAME_LENGTH_MAX+1];
+
+    queue<event_name_t>     m_names;
+    queue<event_block>      m_listeners;
 
 public:
-    GEventQ(const char *eventName, unsigned eventQSize=16);
+    event_emitter(unsigned max_event_names=6, unsigned max_listeners=5)
+        : m_names(max_event_names), m_listeners(max_listeners) {}
+    ~event_emitter() {}
 
-    bool addListener(GEvent::Handler handler, void *data = 0,
-                     unsigned long extraData = 0, bool once = false);
-    void removeListener(GEvent::Handler handler, unsigned long extraData=0);
-    void processEvents(event_processor eventProcessor=0, unsigned long data=0);
+    bool init(unsigned max_event_names=10, unsigned max_listeners=10)
+        { return m_names.init(max_event_names) && m_listeners.init(max_listeners); }
 
-    const char *eventName() { return m_eventName; }
-};
+    bool on(const char *event_name, event_listener listener, void *data=0, u64_t data_ex=0)
+        { return _on(event_name, listener, data, data_ex); }
 
+    bool off(const char *event_name, event_listener listener);
 
-//-----------------------------------------------------------------------------
-//  class GEventEmitter
-//-----------------------------------------------------------------------------
-class GEventEmitter {
-protected:
-    adk::list<GEventQ>      m_eqList;      // event queue list
-    unsigned                m_eqSize = 12;
+    bool once(const char *event_name, event_listener listener, void *data=0, u64_t data_ex=0)
+        { return _on(event_name, listener, data, data_ex, true); }
 
-public:
-    GEventEmitter(unsigned eventQSize=12): m_eqSize(eventQSize) {}
-    ~GEventEmitter() {}
-
-    void on(const char *eventName, GEvent::Handler handler, void *data=0, unsigned long extraData=0)
-        { _on(eventName, handler, data, extraData); }
-
-    void off(const char *eventName, GEvent::Handler handler);
-
-    void once(const char *eventName, GEvent::Handler handler, void *data=0, unsigned long extraData=0)
-        { _on(eventName, handler, data, extraData, true); }
-
-    void emit(const char *eventName);
-
-    GEventQ *findEventQ(const char *eventName);
+    bool emit(const char *event_name);
 
 protected:
-    void _on(const char *eventName, GEvent::Handler handler, void *data = 0,
-             unsigned long extraData = 0, bool once = false);
+    bool _on(const char *event_name, event_listener listener, void *data=0,
+            u64_t data_ex=0, bool once=false);
+
+    //--- helper function
+    const char *__find_event_name(const char *event_name);
+    const char *__register_event_name(const char *event_name);
+    const char *__unregister_event_name(const char *event_name);
+    void __squeez_listeners();
 };
+
+// using event = event_emitter::event;
+
+} // namespace adk

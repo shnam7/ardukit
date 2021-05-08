@@ -10,72 +10,59 @@
 namespace adk {
 
 //-----------------------------------------------------------------------------
-// doublely linked list
+// class linkable
 //-----------------------------------------------------------------------------
-class glist {
-public:
-    class node {
-    protected:
-        node       *m_prev = this;
-        node       *m_next = this;
-        friend class glist;
-        template<class T> friend class list;
-
-    public:
-        node() {}
-        node(node *prev, node *next) : m_prev(prev), m_next(next) {}
-        ~node() { detach(); }
-
-        void append(node *nod) { nod->m_next = m_next; nod->m_prev = this; m_next->m_prev = nod; m_next = nod; }
-        void prepend(node *nod) { m_prev->append(nod); }
-        void detach() { m_prev->m_next = m_next; m_next->m_prev = m_prev; }
-        bool isDetached() { return m_next == this; }
-        unsigned length();  // count the length of the list it's atached
-    };
-
+class linkable {
 protected:
-    node           m_head;
+    linkable       *m_prev = this;
+    linkable       *m_next = this;
 
 public:
-    glist() {}
-    ~glist() { while (m_head.m_next != &m_head) del(m_head.m_next); }
+    linkable() {}
+    ~linkable() { detach(); }
 
-    void add(node *nod) { append(nod); }
-    void remove(node *nod) { nod->detach(); }
-    void del(node *nod) { nod->detach(); delete nod; }
+    void append(linkable *node);
+    void prepend(linkable *node) { node->append(this); }
+    void append_to(linkable *node) { node->append(this); }
+    void prepend_to(linkable *node) { node->prepend(this); }
+    void detach() { m_prev->m_next = m_next; m_next->m_prev = m_prev; }
 
-    void append(node *nod) { m_head.prepend(nod); }
-    void prepend(node *nod) { m_head.append(nod); }
+    void add(linkable *node) { append(node); }
+    void remove(linkable *node) { node->detach(); }
 
-    node *first() { return m_head.m_next == &m_head ? 0 : m_head.m_next; }
-    node *last() { return m_head.m_prev == &m_head ? 0 : m_head.m_prev; }
-    node *nextOf(node *nod = 0)
-        { if (!nod) { nod = &m_head; } return (nod->m_next == &m_head) ? 0 : nod->m_next; }
+    linkable *next() const { return m_next; }
+    linkable *prev() const { return m_prev; }
 
-    unsigned length() { return m_head.length(); }
-    bool isEmpty() { return m_head.isDetached(); }
+    bool is_alone() const { return m_next == this; }
+    unsigned length() const;  // count the length of the list excluding itself
 };
 
-
 template <class T = void>
-class list : public glist {
+class list : protected linkable {
 public:
     list() {}
     ~list() {}
 
-    void add(T *nod) { append(nod); }
-    void remove(T *nod) { glist::remove(nod); }
-    void del(T *nod) { glist::del(nod); }
+    void append(T *node) { linkable::append(node); };
+    void prepend(T *node) { linkable::prepend(node);; }
+    void add(T *node) { linkable::add(node); }
+    void remove(T *node) { linkable::remove(node); }
 
-    void append(T *nod) { glist::append(nod); }
-    void prepend(T *nod){ glist::prepend(nod); }
+    T *first() { return is_empty() ? 0 : (T *)linkable::next(); }
+    T *last() { return is_empty() ? 0 : (T *)linkable::prev(); }
 
-    T *first() { return (T *)glist::first(); }
-    T *last() { return (T *)glist::last(); }
-    T *nextOf(T *nod = 0) { return (T *)glist::nextOf(nod); }
+    T *next_of(T *node = 0) {
+        T *item = node ? (T *)node->next() : first();
+        return item == (T *)this ? 0 : item;
+    }
+
+    T *prev_of(T *node = 0) {
+        T *item = node ? (T *)node->prev() : last();
+        return item == ( T *)this ? 0 : item;
+    }
+
+    unsigned is_empty() { return linkable::is_alone(); }
+    unsigned length() { return linkable::length(); }
 };
 
 } // namespace adk
-
-
-using GList = adk::glist;

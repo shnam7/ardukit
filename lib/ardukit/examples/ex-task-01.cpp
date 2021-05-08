@@ -1,20 +1,22 @@
 #include "ardukit.h"
 
-GTask t1, t2, t3;
+using namespace adk;
 
-void taskFunc(GTask &t)
+task t1, t2, t3;
+
+void task_func(task &t)
 {
-    dmsg("Task %d is running. tick=%ld", t.taskID(), GTimer::uticks());
+    dmsg("Task %d is running. tick=%ld", t.task_id(), ticks());
 }
 
 void setup()
 {
-    Serial.begin(128000);
+    Serial.begin(12800);
 
     // init tasks
-    t1.bind(taskFunc, 1000).start(); // periodic task w/ interval=1sec
-    t2.bind(taskFunc, 2000).start(); // periodic task w/ interval=2sec
-    t3.bind(taskFunc, 3000).start(); // periodic task w/ interval=3sec
+    t1.set_interval(1000).start(task_func); // periodic task w/ interval=1sec
+    t2.set_interval(2000).start(task_func); // periodic task w/ interval=1sec
+    t3.set_interval(3000).start(task_func); // periodic task w/ interval=1sec
 }
 
 void loop()

@@ -9,14 +9,14 @@
 //-----------------------------------------------------------------------------
 //  class GEdgeErigger
 //-----------------------------------------------------------------------------
-void GEdgeTrigger::triggerOnEdge(int value) {
-    if (m_isHigh) {
-        if (value <= m_low) {
-            m_isHigh = false;
+void GEdgeTrigger::detect_edge(int value) {
+    if (m_is_high) {
+        if (value <= m_low_threshould) {
+            m_is_high = false;
             emit("falling");
         }
-    } else if (value >= m_high) {
-        m_isHigh = true;
-        emit("falling");
+    } else if (value >= m_high_threshould) {
+        m_is_high = true;
+        emit("rising");
     }
 }

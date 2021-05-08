@@ -1,22 +1,25 @@
 #include "ardukit.h"
 
-void fadeRestarter(GEvent &e);
+using namespace adk;
+
+void fade_restarter(event_emitter::event &e);
 
 //--- LEDFader
-class LEDFader : public GTask {
+class LEDFader : public task  {
 protected:
-    int         m_pinID = -1;
-    int         m_brightness = 255;
-    int         m_stepSize = 5;
+    int             m_pinID = -1;
+    int             m_brightness = 255;
+    int             m_stepSize = 5;
+    event_emitter   m_emitter;
 
 public:
-    LEDFader() {}
+    LEDFader() : m_emitter(1, 2) { set_event_emitter(m_emitter); }
     void config(int pinID, int stepSize = 5, int interval = 10)
     {
         m_pinID = pinID;
         m_stepSize = stepSize;
         pinMode(m_pinID, OUTPUT);
-        setInterval(interval);
+        set_interval(interval);
     }
 
 protected:
@@ -40,11 +43,9 @@ LEDFader faders[LED_COUNT];
 bool isReverse = false;
 int suspendCount = 0;
 
-void fadeRestarter(GEvent &e)
+void fade_restarter(event_emitter::event &e)
 {
     if (++suspendCount < LED_COUNT) return;
-    isReverse = !isReverse;
-    suspendCount = 0;
 
     int step = isReverse ? -trailerSize : trailerSize;
     int delay = isReverse ? trailerSize * LED_COUNT : 0;
@@ -52,6 +53,8 @@ void fadeRestarter(GEvent &e)
         faders[i].resume(delay);
         delay += step;
     }
+    isReverse = !isReverse;
+    suspendCount = 0;
 }
 
 void setup()
@@ -60,7 +63,7 @@ void setup()
     for (int i = 0; i < LED_COUNT; i++) {
         faders[i].config(LED_PINS[i]);
         faders[i].start(i*trailerSize);
-        faders[i].on("suspend", fadeRestarter);
+        faders[i].on("suspend", fade_restarter);
     }
 }
 

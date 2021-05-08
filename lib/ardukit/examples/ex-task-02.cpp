@@ -1,40 +1,46 @@
 #include "ardukit.h"
 
-const int TASK_COUNT = 10;
-GTask tasks[TASK_COUNT];
+using namespace adk;
 
-void eventHandler(GEvent &e)
+const int       TASK_COUNT = 5;
+task            tasks[TASK_COUNT];
+event_emitter   *evm[TASK_COUNT];
+
+void event_handler(event_emitter::event &e)
 {
-    GTask &task = *(GTask *)e.data();
-    unsigned taskID = task.taskID();
-    tick_t tm = GTimer::uticks();
+    task &t = *(task *)e.data;
+    unsigned task_id = t.task_id();
+    tick_t tm = ticks();
 
-    if (strcmp(e.eventName(), "start") == 0) {
-        dmsg("Task %d started. time=%ld -----------", taskID, tm);
+    if (strcmp(e.name, "start") == 0) {
+        dmsg("Task %d started. time=%ld -----------", task_id, tm);
     }
-    else if (strcmp(e.eventName(), "sleep") == 0) {
-        dmsg("Task %d is going to sleep. time=%ld", taskID, tm);
+    else if (strcmp(e.name, "sleep") == 0) {
+        dmsg("Task %d is going to sleep. time=%ld", task_id, tm);
     }
-    else if (strcmp(e.eventName(), "awake") == 0) {
-        dmsg("Task %d is waking up now. time=%ld", taskID, tm);
+    else if (strcmp(e.name, "awake") == 0) {
+        dmsg("Task %d is waking up now. time=%ld", task_id, tm);
     }
 }
 
-void taskFunc(GTask &t)
+void task_func(task &t)
 {
     t.sleep(1000);
 }
 
 void setup()
 {
-    Serial.begin(128000);
+    Serial.begin(9600);
 
     for (int i = 0; i < TASK_COUNT; i++) {
-        GTask &t = tasks[i];
-        t.on("start", eventHandler, &t);
-        t.on("sleep", eventHandler, &t);
-        t.on("awake", eventHandler, &t);
-        t.bind(taskFunc, (i + 1) * 1000).start(); // bind() returns GTask itself
+        evm[i] = new event_emitter(3, 5);
+        task &t = tasks[i];
+        t.set_interval((i + 1) * 1000)
+            .set_event_emitter(evm[i])
+            .on("start", event_handler, &t)
+            .on("sleep", event_handler, &t)
+            .on("awake", event_handler, &t)
+            .start(task_func); // bind() returns GTask itself
     }
 }
 

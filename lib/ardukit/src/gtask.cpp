@@ -5,222 +5,177 @@
  */
 
 #include "gtask.h"
-#include "gtimer.h"
+#include "gtime.h"
 #include "platform.h"
 
-namespace adk {
-    GTaskManager taskManager;
-    GEventEmitter _taskEventEmitter(ADK_TASK_EVENT_QUE_SIZE);
-}
+using namespace adk;
 
-static bool _taskEventProcessor(const char *eventName, GEventQ::event_listener& el, unsigned long data)
+//-----------------------------------------------------------------------------
+// class task
+//-----------------------------------------------------------------------------
+unsigned task::__task_count = 0;
+task    *task::__head = 0;    // head of task list
+task    *task::__cur = 0;     // pointer to current task
+
+task::task(msec_t interval) : m_id(++__task_count), m_interval(interval)
 {
-    // handle event if the event extraData matchs current task
-    if (el.extraData == data) {
-        GEvent event = { eventName, el.data, el.extraData };
-        el.handler(event);
+    // add to tsask list
+    if (!__head) {
+        __head = this;
+    } else {
+        task *tail = __head;
+        while (tail->m_next) tail = tail->m_next;
+        tail->m_next = this;
     }
-    return true;    // disable next event handling
+    if (!__cur) __cur = __head;
 }
 
+task::~task()
+{
+    // remove from the task list
+    if (__head) {
+        task *prev = __head;
+        task *curr = __head->m_next;
+        while (curr) {
+            if (curr == this) break;
+            prev = curr;
+            curr = curr->m_next;
+        }
+        if (curr) {
+            prev->m_next = curr->m_next;
+            curr->m_next = 0;
+        }
+    }
+    --__task_count;
+}
 
-//-----------------------------------------------------------------------------
-// GTask
-//-----------------------------------------------------------------------------
-unsigned GTask::s_taskCount = 0;
+task& task::start(task_func func, void *data)
+{
+    if (m_state == _INIT) _set_state(_PREPARE);
+    if (m_state != _PREPARE) return *this;
 
-void GTask::run()
+    m_func = func;
+    m_data = data;
+    _set_state(_RUNNING);
+    schedule_next();
+    return *this;
+}
+
+task& task::start(msec_t delay_msec)
+{
+    if (m_state == _INIT) _set_state(_PREPARE);
+    if (m_state != _PREPARE) return *this;
+
+    _set_state(_RUNNING);
+    schedule_next(delay_msec);
+    return *this;
+}
+
+task& task::sleep(msec_t msec)
+{
+    if (m_state != _SLEEPING) _set_state(_SLEEPING);
+    schedule_next(msec);
+    return *this;
+}
+
+task& task::awake(msec_t delay_msec)
+{
+    if (m_state != _SLEEPING) return *this;
+    _set_state(_RUNNING);
+    schedule_next(delay_msec);
+    return *this;
+}
+
+task& task::suspend()
+{
+    if (m_state == _SUSPENDED) return *this;
+    _set_state(_SUSPENDED);
+    return *this;
+}
+
+task& task::resume(msec_t delay_msec)
+{
+    if (m_state != _SUSPENDED) return *this;
+    _set_state(_RUNNING);
+    schedule_next(delay_msec);
+    return *this;
+}
+
+void task::schedule_next(msec_t delay_msec)
+{
+    if (delay_msec==0) delay_msec = m_interval;
+    m_next_run = ticks() + msec_to_ticks(delay_msec);
+}
+
+void task::run()
 {
     if (m_func) m_func(*this);
 }
 
-GTask& GTask::bind(TaskFunc func, tick_t interval, void *data)
-{
-    if (m_state != _INIT) return *this;
-    m_func = func;
-    m_data = data;
-    m_interval = interval * 1000;
-    setState(_PREPARED);
-    scheduleNext();
-    adk::taskManager.add(this);
-    return *this;
-}
-
-void GTask::start(tick_t delay)
-{
-    if (m_state == _INIT) {
-        setState(_PREPARED);
-        adk::taskManager.add(this);
-    }
-    if (m_state != _PREPARED) return;
-    setState(_RUNNING);
-    scheduleNext(delay);
-}
-
-void GTask::sleep(tick_t msec)
-{
-    if (m_state != _SLEEPING) setState(_SLEEPING);
-    scheduleNext(msec);
-}
-
-void GTask::suspend()
-{
-    if (m_state == _SUSPENDED) return;
-    setState(_SUSPENDED);
-}
-
-void GTask::awake(tick_t delay)
-{
-    if (m_state != _SLEEPING) return;
-    setState(_RUNNING);
-    scheduleNext(delay);
-}
-
-void GTask::resume(tick_t delay)
-{
-    if (m_state != _SUSPENDED) return;
-    setState(_RUNNING);
-    scheduleNext(delay);
-}
-
-void GTask::schedule(tick_t when_usec)
-{
-    m_nextTick = when_usec;
-}
-
-void GTask::scheduleNext(tick_t delay)
-{
-    delay = (delay==0) ? m_interval : delay * 1000;
-    m_nextTick = GTimer::uticks() + delay;
-}
-
-void GTask::setState(unsigned state)
+void task::_set_state(unsigned state)
 {
     if (m_state == state) return;
 
-    m_lastState = m_state;
+    m_last_state = m_state;
     m_state = state;
 
     switch (state) {
-    case _PREPARED:
-        onPrepare();
-        emit("prepare");
+    case _PREPARE:
+        // on_prepare();
+        if (m_emitter) m_emitter->emit("prepare");
         break;
     case _RUNNING:
-        switch (m_lastState) {
-            case _PREPARED: onStart(); emit("start"); break;
-            case _SLEEPING: onAwake(); emit("awake"); break;
-            case _SUSPENDED: onResume(); emit("resume"); break;
+        switch (m_last_state) {
+            case _PREPARE:
+                // on_start();
+                if (m_emitter) m_emitter->emit("start");
+                break;
+            case _SLEEPING:
+                // on_awake();
+                if (m_emitter) m_emitter->emit("awake");
+                break;
+            case _SUSPENDED:
+                // on_resume();
+                if (m_emitter) m_emitter->emit("resume");
+                break;
         }
         break;
     case _SLEEPING:
-        onSleep();
-        emit("sleep");
+        // on_sleep();
+        if (m_emitter) m_emitter->emit("sleep");
         break;
     case _SUSPENDED:
-        onSuspend();
-        emit("suspend");
+        // on_suspend();
+        if (m_emitter) m_emitter->emit("suspend");
         break;
     }
 }
 
-void GTask::on(const char *eventName, GEvent::Handler handler, void *data)
-{
-    adk::_taskEventEmitter.on(eventName, handler, data, (unsigned long)this);
-}
+void task::schedule() {
+    if (!__cur) return;
 
-void GTask::off(const char *eventName, GEvent::Handler handler)
-{
-    GEventQ *evQ = (GEventQ *)adk::_taskEventEmitter.findEventQ(eventName);
-    if (evQ) evQ->removeListener(handler, (unsigned long)this);
-}
-
-void GTask::once(const char *eventName, GEvent::Handler handler, void *data)
-{
-    adk::_taskEventEmitter.once(eventName, handler, data, (unsigned long)this);
-}
-
-void GTask::emit(const char *eventName)
-{
-    GEventQ *evQ = (GEventQ *)adk::_taskEventEmitter.findEventQ(eventName);
-    if (evQ) evQ->processEvents(_taskEventProcessor, (unsigned long)this);
-}
-
-
-//-----------------------------------------------------------------------------
-// GTaskManager
-//-----------------------------------------------------------------------------
-void GTaskManager::add(GTask *task) {
-    if (!m_head) {
-        m_head = task;
-    } else {
-        GTask *tail = m_head;
-        while (tail->m_next) tail = tail->m_next;
-        tail->m_next = task;
-    }
-    if (!m_cur) m_cur = m_head;
-}
-
-void GTaskManager::remove(GTask *task) {
-    if (!m_head) return;
-
-    GTask *pPrev = m_head;
-    GTask *pCurr = m_head->m_next;
-    while (pCurr) {
-        if (pCurr == task) break;
-        pPrev = pCurr;
-        pCurr = pCurr->m_next;
-    }
-    if (pCurr) {
-        pPrev->m_next = pCurr->m_next;
-        pCurr->m_next = 0;
-    }
-}
-
-void GTaskManager::run() {
-    GTimer::processEvents();
-    if (!m_cur) return;
-
-    switch (m_cur->m_state) {
-    case GTask::_RUNNING: {
-        tick_t tm = GTimer::uticks();
-        if (tm >= m_cur->m_nextTick) {
+    switch (__cur->m_state) {
+    case _RUNNING: {
+        tick_t tm = ticks();
+        if (tm >= __cur->m_next_run) {
             // do next schedule first to make it availe in run()
             // In additon, run() may do some rescheduling
-            m_cur->scheduleNext();
-            m_cur->run();
+            __cur->schedule_next();
+            __cur->run();
         }
         break;
     };
-    case GTask::_SLEEPING: {
-        tick_t tm = GTimer::uticks();
-        if (tm >= m_cur->m_nextTick) {
-            m_cur->setState(GTask::_RUNNING);
-            m_cur->scheduleNext();
+    case _SLEEPING: {
+        tick_t tm = ticks();
+        if (tm >= __cur->m_next_run) {
+            __cur->_set_state(_RUNNING);
+            __cur->schedule_next();
         }
         break;
     }
     default:
         break;
     }
-    m_cur = (m_cur->m_next) ? m_cur->m_next : m_head; // move on to next task
-    // dmsg("s%d t=%ld n=%ld i=%ld",  m_cur->m_state, GTimer::uticks(), m_cur->m_nextTick, m_cur->m_interval);
-}
-
-GTask *GTaskManager::getTask(unsigned id) {
-    GTask *pT = m_head;
-    while (pT) {
-        if (pT->m_ID == id) break;
-        pT = pT->m_next;
-    }
-    return pT;
-}
-
-GTask *GTaskManager::nextOf(GTask *pCurrent) {
-    if (!pCurrent) return m_head;
-    return pCurrent->m_next;
-}
-
-unsigned GTaskManager::taskCount() {
-    return GTask::s_taskCount;
+    __cur = (__cur->m_next) ? __cur->m_next : __head; // move on to next task
+    // dmsg("tid=%d s%d t=%ld n=%ld i=%ld",  __cur->m_id, __cur->m_state, ticks(), __cur->m_next_run, __cur->m_interval);
 }

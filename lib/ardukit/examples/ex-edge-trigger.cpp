@@ -1,15 +1,17 @@
 #include "ardukit.h"
 #include <SoftwareSerial.h>
 
+using event = adk::event_emitter::event;
+
 SoftwareSerial mySoftwareSerial(10, 11);
 GEdgeTrigger sensor1;
 
-void onRising(GEvent &e)
+void on_rising(event &)
 {
     dmsg("------------------------> Rise triggered");
 }
 
-void onFalling(GEvent &e)
+void on_falling(event&)
 {
     dmsg("++++++++++++++++++++++++> Fall triggered");
 }
@@ -18,12 +20,12 @@ void setup()
 {
     Serial.begin(9600);
 
-    sensor1.setThreshoulds(100, 500);
-    sensor1.on("rising", onRising);
-    sensor1.on("falling", onFalling);
+    sensor1.set_threshoulds(100, 500);
+    sensor1.on("rising", on_rising);
+    sensor1.on("falling", on_falling);
 }
 
 void loop()
 {
-    sensor1.triggerOnEdge(analogRead(A0));
+    sensor1.detect_edge(analogRead(A0));
 }

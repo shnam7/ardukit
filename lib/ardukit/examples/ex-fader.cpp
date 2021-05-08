@@ -1,6 +1,6 @@
 #include "ardukit.h"
 
-class Fader : public GTask {
+class Fader : public adk::task {
 protected:
     int m_pinID         = 0;
     int m_value         = 0;
@@ -9,12 +9,12 @@ protected:
 
 public:
     Fader() {}
-    void config(int pinID, int interval=0, int delta=1, int pauseDelay=1000)
+    void config(int pinID, int interval=0, int delta=1, int pauseDelay=500)
     {
         m_pinID = pinID;
         m_delta = delta;
         m_pauseDelay = pauseDelay;
-        setInterval(10);
+        set_interval(5);
         pinMode(pinID, OUTPUT);
     }
 

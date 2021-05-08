@@ -1,30 +1,28 @@
-/**
- *  @package Ardukit
+/*
+ *  @packaage Ardukit
  *
- *  @module timer and timer events
+ *  @module timee
  */
 
 #pragma once
 #include "adkdef.h"
-#include "platform.h"
-#include "gevent.h"
+#include "gtime.h"
 
-//-----------------------------------------------------------------------------
-//  GTimer
-//-----------------------------------------------------------------------------
-typedef unsigned long   tick_t;      // 32bit
+namespace adk
+{
+    //--- internal helpef functions
+    namespace timer_helpers {
+        unsigned set_timer_block(void (*func)(void *), void *data, msec_t interval_msec, bool once);
+        void run_timer();
+    }
 
-namespace GTimer {
-    const int TIMER_EVENT_QUE_SIZE  = 16;
 
-    // microsec counter
-    inline tick_t ticks() { return millis(); }
-    inline tick_t elapsed(tick_t since) { return ticks() - since; }
+    inline unsigned set_timeout(void (*func)(void *), msec_t timeout_msec, void *data=0)
+        { return timer_helpers::set_timer_block(func, data, timeout_msec, true); }
 
-    inline tick_t uticks() { return micros(); }
-    inline tick_t uElapsed(tick_t since) { return uticks() - since; }
+    inline unsigned set_interval(void (*func)(void *), msec_t interval_msec, void *data=0)
+        { return timer_helpers::set_timer_block(func, data, interval_msec, false); }
 
-    handle_t setTimeout(GEvent::Handler handler, tick_t msec=0, void *data=0);
-    void clearTimeout(handle_t handle);
-    void processEvents();   // process timer events
-};
+    void clear_timeout(unsigned id);
+
+} // namespace adk

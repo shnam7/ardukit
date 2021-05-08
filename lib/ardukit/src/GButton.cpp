@@ -5,6 +5,7 @@
  */
 
 #include "platform.h"
+#include "gtime.h"
 #include "gtimer.h"
 #include "GButton.h"
 
@@ -13,8 +14,8 @@ const int SCAN_INTERVAL = 20;   // msec
 //-----------------------------------------------------------------------------
 //  class GButton
 //-----------------------------------------------------------------------------
-GButton::GButton(int pinID, int ioType, int sensitivity)
-    : m_pinID(pinID), m_ioType(ioType), m_sensitivity(sensitivity)
+GButton::GButton(int pin_id, int io_type, int sensitivity)
+    : m_pin_id(pin_id), m_io_type(io_type), m_sensitivity(sensitivity)
 {
     if (m_sensitivity < 0) m_sensitivity = 0;
 }
@@ -22,32 +23,32 @@ GButton::GButton(int pinID, int ioType, int sensitivity)
 GButton::~GButton() {
 }
 
-void GButton::enable(int pinID) {
-    if (pinID >= 0) m_pinID = pinID;
-    if (m_ioType == INPUT_PULLUP) digitalWrite(m_pinID, INPUT_PULLUP);
-    GTimer::setTimeout(scan, SCAN_INTERVAL, this);
+void GButton::enable(int pin_id) {
+    if (pin_id >= 0) m_pin_id = pin_id;
+    if (m_io_type == INPUT_PULLUP) digitalWrite(m_pin_id, INPUT_PULLUP);
+    adk::set_timeout(scan, SCAN_INTERVAL, this);
     m_enabled = true;
 }
 
-void GButton::scan(GEvent &e) {
-    GButton *pB = (GButton *)e.data();
-    int delta = digitalRead(pB->m_pinID) > 0 ? 1 : -1;
-    if (pB->m_ioType == INPUT_PULLUP) delta = -delta;
+void GButton::scan(void *data) {
+    GButton *btn = (GButton *)data;
+    int delta = digitalRead(btn->m_pin_id) > 0 ? 1 : -1;
+    if (btn->m_io_type == INPUT_PULLUP) delta = -delta;
 
-    // int preVal = pB->m_value;
-    int curVal = pB->m_value + delta;
-    if (curVal > pB->m_sensitivity) curVal = pB->m_sensitivity;
-    if (curVal < 0) curVal = 0;
-    pB->m_value = curVal;
+    // int preVal = btn->m_value;
+    int cur = btn->m_value + delta;
+    if (cur > btn->m_sensitivity) cur = btn->m_sensitivity;
+    if (cur < 0) cur = 0;
+    btn->m_value = cur;
 
-    if (!pB->m_isPressed && curVal >= pB->m_sensitivity) {
-        pB->m_isPressed = true;
-        pB->emit("press");
+    if (!btn->m_is_pressed && cur >= btn->m_sensitivity) {
+        btn->m_is_pressed = true;
+        btn->emit("press");
     }
-    if (pB->m_isPressed && curVal <= 0) {
-        pB->m_isPressed = false;
-        pB->emit("releas");
+    if (btn->m_is_pressed && cur <= 0) {
+        btn->m_is_pressed = false;
+        btn->emit("releas");
     }
-    // dmsg("scan: interval=%d, cur==%d isPressed=%d", pB->m_sensitivity, curVal, pB->isPressed());
-    if (pB->m_enabled) GTimer::setTimeout(scan, SCAN_INTERVAL, pB);
+    // dmsg("scan: interval=%d, cur==%d isPressed=%d", btn->m_sensitivity, cur, btn->isPressed());
+    if (btn->m_enabled) adk::set_timeout(scan, SCAN_INTERVAL, btn);
 }
