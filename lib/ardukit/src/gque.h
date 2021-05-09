@@ -97,6 +97,30 @@ public:
 	T *tail() const { return (T *)CircularQueue::tail(); }
 	T *begin() const { return (T *)CircularQueue::begin(); }
 	T *end() const { return (T *)CircularQueue::end(); }
+
+public:
+    //--- Iterators
+    class Iterator {
+        Queue<T>    *m_q = 0;
+        T           *m_p = 0;
+    public:
+        Iterator(Queue<T> *que, T *p=0) : m_q(que), m_p(p) {}
+        Iterator(const Iterator& it) : m_q(it.m_q), m_p(it.m_p) {}
+        ~Iterator() {}
+        T& operator*() const { return *m_p; }
+        T *operator->() { return m_p; }
+        Iterator& operator++() { m_p=m_q->peek_next(m_p); return *this; }
+        Iterator operator++(int) { Iterator tmp(this->m_q, m_p); m_p=m_q->peek_next(m_p); return tmp; }
+        Iterator& operator--() { m_p=m_q->peek_prev(m_p); return *this; }
+        Iterator operator--(int) { Iterator tmp(this->m_q, m_p); m_p=m_q->peek_prev(m_p); return tmp; }
+        bool operator==(const Iterator& rval) const { return m_p == rval.m_p; }
+        bool operator!=(const Iterator& rval) const { return m_p != rval.m_p; }
+    };
+
+    Iterator begin() { return Iterator(this, head()); }
+    Iterator end() { return Iterator(this, 0); }
+    Iterator rbegin() { return Iterator(this, last()); }
+    Iterator rend() { return Iterator(this, 0); }
 };
 
 

@@ -63,6 +63,28 @@ public:
 
     unsigned is_empty() { return Linkable::is_alone(); }
     unsigned length() { return Linkable::length(); }
+
+public:
+    //--- Iterators
+    class Iterator {
+        Linkable       *m_p = 0;
+    public:
+        Iterator(Linkable *p) : m_p(p) {}
+        ~Iterator() {}
+        T& operator*() const { return *(T *)m_p; }
+        T *operator->() { return (T *)m_p; }
+        Iterator& operator++() { m_p = m_p->m_next; return *this; }
+        Iterator operator++(int) { Iterator tmp(m_p); m_p=m_p->next(); return tmp; }
+        Iterator& operator--() { m_p = m_p->m_prev; return *this; }
+        Iterator operator--(int) { Iterator tmp(m_p); m_p=m_p->prev(); return tmp; }
+        bool operator==(const Iterator& rval) const { return m_p == rval.m_p; }
+        bool operator!=(const Iterator& rval) const { return m_p != rval.m_p; }
+    };
+
+    Iterator begin() { return Iterator((T *)this->m_next); }
+    Iterator end() { return Iterator((T *)this); }
+    Iterator rbegin() { return Iterator((T *)this->m_prev); }
+    Iterator rend() { return Iterator((T *)this); }
 };
 
 } // namespace adk
