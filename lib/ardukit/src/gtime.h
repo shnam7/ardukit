@@ -7,38 +7,16 @@
 #pragma once
 #include "adkdef.h"
 #include "platform.h"
-// #include "gevent.h"
-
-//-----------------------------------------------------------------------------
-//  GTimer
-//-----------------------------------------------------------------------------
-// typedef unsigned long   tick_t;      // 32bit
-
-// namespace GTimer {
-//     const int TIMER_EVENT_QUE_SIZE  = 16;
-
-//     // // microsec counter
-//     // inline tick_t ticks() { return millis(); }
-//     // inline tick_t elapsed(tick_t since) { return ticks() - since; }
-
-//     // inline tick_t uticks() { return micros(); }
-//     // inline tick_t uElapsed(tick_t since) { return uticks() - since; }
-
-//     handle_t setTimeout(GEvent::Handler handler, tick_t msec=0, void *data=0);
-//     void clearTimeout(handle_t handle);
-//     void processEvents();   // process timer events
-// };
-
 
 namespace adk
 {
 
-typedef unsigned long tick_t;   // timer tick count type    (32-bits)
-typedef unsigned long usec_t;   // microsec time type
-typedef unsigned msec_t;   // millisec time type
+typedef uint64_t        tick_t;   // timer tick count type
+typedef unsigned long   usec_t;   // microsec time type
+typedef unsigned long   msec_t;   // millisec time type
 
 //--- get time elapsed since system start in msec
-inline tick_t ticks() { return micros(); }
+tick_t ticks();
 
 inline usec_t ticks_to_usec(tick_t ticks) { return (usec_t)ticks; }
 inline msec_t ticks_to_msec(tick_t ticks) { return (msec_t)(ticks_to_usec(ticks) / 1000); }
@@ -57,6 +35,7 @@ inline tick_t m2t(msec_t msec) { return msec_to_ticks(msec); }
 inline usec_t m2u(msec_t msec) { return msec_to_usec(msec); }
 
 inline tick_t elapsed_ticks(tick_t tm) { return ticks() - tm; }
+inline tick_t elapsed_ticks(tick_t tm1, tick_t tm2) { return tm2 - tm1; }
 inline usec_t elapsed_usec(tick_t tm) { return ticks_to_usec(elapsed_ticks(tm)); }
 inline msec_t elapsed_msec(tick_t tm) { return ticks_to_msec(elapsed_ticks(tm)); }
 

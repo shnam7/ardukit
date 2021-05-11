@@ -13,8 +13,9 @@ const int MAX_CALL_STACK = 12;
 struct eblock {
     void        (*func)(void *);
     void        *data;
+    tick_t      interval;
     tick_t      next_run;
-    msec_t      interval;
+    bool        once;
     unsigned    id;
 };
 
@@ -38,10 +39,10 @@ unsigned timer_helpers::set_timer_block(void (*func)(void *), void *data, msec_t
 
     eb->func = func;
     eb->data = data;
-    eb->next_run = ticks() + msec_to_ticks(interval_msec);
-    eb->interval = once ? interval_msec : 0;
+    eb->interval = msec_to_ticks(interval_msec);
+    eb->next_run = ticks() + eb->interval;
+    eb->once = once;
     eb->id = ++_counter;
-
     // dmsg(">set_timer: id=%d interval=%d next=%ld avail=%d\n", eb->id, interval_msec, eb->next_run, _eque.available());
     return eb->id;
 }
@@ -59,10 +60,10 @@ void timer_helpers::run_timer()
         if (eb->func && tm >= eb->next_run) {
             // dmsg(">run_timer: id=%d tm=%ld next=%ld interva=%d avail=%d\n", eb->id, tm, eb->next_run, eb->interval, _eque.available());
             eb->func(eb->data);
-            if (eb->interval == 0)
+            if (eb->once)
                 eb->func = 0;
             else
-                eb->next_run = tm + msec_to_ticks(eb->interval);
+                eb->next_run = tm + eb->interval;
         }
         if (eb->func) _eque.put(eb);    // put back
     }

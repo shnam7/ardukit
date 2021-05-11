@@ -22,7 +22,7 @@ namespace adk {
 //-----------------------------------------------------------------------------
 class Task {
 public:
-    typedef void (*task_func)(Task &t);
+    typedef void (*task_func)(void *);
 
 protected:
     enum { _INIT=0, _PREPARE, _RUNNING, _SLEEPING, _SUSPENDED };
@@ -30,19 +30,19 @@ protected:
     unsigned        m_id            = 0;
     unsigned        m_state         = _INIT;
     unsigned        m_last_state    = _INIT;
-    usec_t    m_interval      = 0;
-    usec_t    m_next_run      = 0;
+    tick_t          m_interval      = 0;
+    tick_t          m_next_run      = 0;
 
     task_func       m_func          = 0;
     void            *m_data         = 0;
-    EventEmitter   *m_emitter      = 0;
+    EventEmitter    *m_emitter      = 0;
     Task            *m_next         = 0;        // link to next task
 
 public:
     Task(msec_t interval=0);
     ~Task();
 
-    Task& set_interval(msec_t msec) { m_interval = msec; return *this; }
+    Task& set_interval(msec_t msec) { m_interval = msec_to_ticks(msec); return *this; }
     Task& set_event_emitter(EventEmitter *emitter) { m_emitter = emitter; return *this; }
     Task& set_event_emitter(EventEmitter& emitter) { return set_event_emitter(&emitter); }
 
@@ -60,27 +60,27 @@ public:
     bool is_suspended() { return m_state == _SUSPENDED; }
 
     unsigned task_id() { return m_id; }
-    msec_t interval() { return (msec_t)(m_interval); }    // return in msec
+    msec_t interval() { return ticks_to_msec(m_interval); }    // return in msec
     void *data() { return m_data; }
 
     // //--- event emitter shariing I/F to reduce memory usage
     Task& on(const char *event_name, EventEmitter::event_listener listener, void *data=0)
-        { if (m_emitter) m_emitter->on(event_name, listener, data, (u64_t)this); return *this; }
+        { if (m_emitter) m_emitter->on(event_name, listener, data); return *this; }
 
     Task& off(const char *event_name, EventEmitter::event_listener listener)
         { if (m_emitter) m_emitter->off(event_name, listener); return *this; }
 
     Task& once(const char *event_name, EventEmitter::event_listener listener, void *data=0)
-        { if (m_emitter) m_emitter->once(event_name, listener, data, (u64_t)this); return *this; }
+        { if (m_emitter) m_emitter->once(event_name, listener, data); return *this; }
 
     Task& emit(const char *event_name)
         { if (m_emitter) m_emitter->emit(event_name); return *this; }
 
-    void schedule_next(msec_t delay_msec=0);   // set next execution time in milli sec
+    void schedule_next(msec_t delay_msec=0);    // set next execution time in milli sec
 
 protected:
     virtual void run();
-    void _set_state(unsigned state);
+    void _schedule();
 
     //--- task management
     static unsigned     __task_count;

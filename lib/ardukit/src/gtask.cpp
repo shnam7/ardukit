@@ -17,7 +17,7 @@ unsigned Task::__task_count = 0;
 Task    *Task::__head = 0;    // head of task list
 Task    *Task::__cur = 0;     // pointer to current task
 
-Task::Task(msec_t interval) : m_id(++__task_count), m_interval(interval)
+Task::Task(msec_t interval) : m_id(++__task_count), m_interval(msec_to_ticks(interval))
 {
     // add to tsask list
     if (!__head) {
@@ -51,81 +51,85 @@ Task::~Task()
 
 Task& Task::start(task_func func, void *data)
 {
-    if (m_state == _INIT) _set_state(_PREPARE);
-    if (m_state != _PREPARE) return *this;
-
-    m_func = func;
-    m_data = data;
-    _set_state(_RUNNING);
-    schedule_next();
+    if (m_state == _INIT) {
+        m_func = func;
+        m_data = data;
+        m_next_run = 0;     // set initial delay to zero
+        m_state = _PREPARE;
+    }
     return *this;
 }
 
 Task& Task::start(msec_t delay_msec)
 {
-    if (m_state == _INIT) _set_state(_PREPARE);
-    if (m_state != _PREPARE) return *this;
-
-    _set_state(_RUNNING);
-    schedule_next(delay_msec);
+    if (m_state == _INIT) {
+        m_next_run = msec_to_ticks(delay_msec); // set initial delay
+        m_state = _PREPARE;
+    }
     return *this;
 }
 
 Task& Task::sleep(msec_t msec)
 {
-    if (m_state != _SLEEPING) _set_state(_SLEEPING);
-    schedule_next(msec);
+    if (m_state != _SLEEPING) {
+        schedule_next(msec);
+        m_state = _SLEEPING;
+    }
     return *this;
 }
 
 Task& Task::awake(msec_t delay_msec)
 {
-    if (m_state != _SLEEPING) return *this;
-    _set_state(_RUNNING);
-    schedule_next(delay_msec);
+    if (m_state == _SLEEPING) {
+        schedule_next(delay_msec);
+        m_state = _RUNNING;
+    }
     return *this;
 }
 
 Task& Task::suspend()
 {
-    if (m_state == _SUSPENDED) return *this;
-    _set_state(_SUSPENDED);
+    if (m_state != _SUSPENDED) {
+        // schedule_next();
+        m_state = _SUSPENDED;
+    }
     return *this;
 }
 
 Task& Task::resume(msec_t delay_msec)
 {
-    if (m_state != _SUSPENDED) return *this;
-    _set_state(_RUNNING);
-    schedule_next(delay_msec);
+    if (m_state == _SUSPENDED) {
+        schedule_next(delay_msec);
+        m_state = _RUNNING;
+    }
     return *this;
 }
 
 void Task::schedule_next(msec_t delay_msec)
 {
-    if (delay_msec==0) delay_msec = m_interval;
-    m_next_run = ticks() + msec_to_ticks(delay_msec);
+    m_next_run = ticks() +
+        ((delay_msec==0) ? m_interval : msec_to_ticks(delay_msec));
 }
 
 void Task::run()
 {
-    if (m_func) m_func(*this);
+    if (m_func) m_func(m_data);
 }
 
-void Task::_set_state(unsigned state)
-{
-    if (m_state == state) return;
-
-    m_last_state = m_state;
-    m_state = state;
-
-    switch (state) {
+void Task::_schedule() {
+    switch (m_state) {
     case _PREPARE:
-        // on_prepare();
-        if (m_emitter) m_emitter->emit("prepare");
+       if (m_state != m_last_state) {
+            // on_prepare();
+            if (m_emitter) m_emitter->emit("prepare");
+            m_last_state = m_state;
+            m_state = _RUNNING;
+            m_next_run += ticks();  // add current tick to initial delay
+        }
         break;
     case _RUNNING:
-        switch (m_last_state) {
+        if (m_state != m_last_state) {
+            switch (m_last_state) {
             case _PREPARE:
                 // on_start();
                 if (m_emitter) m_emitter->emit("start");
@@ -138,44 +142,42 @@ void Task::_set_state(unsigned state)
                 // on_resume();
                 if (m_emitter) m_emitter->emit("resume");
                 break;
+            }
+            m_last_state = m_state;
+        }
+        else if (ticks() >= m_next_run) {
+            // do next schedule first to make it availe in run()
+            // In additon, run() may do some rescheduling
+            schedule_next();
+            run();
         }
         break;
     case _SLEEPING:
-        // on_sleep();
-        if (m_emitter) m_emitter->emit("sleep");
+        if (m_state != m_last_state) {
+            // on_sleep();
+            if (m_emitter) m_emitter->emit("sleep");
+            m_last_state = m_state;
+        }
+        else if (ticks() >= m_next_run) {
+            schedule_next();
+            m_state = _RUNNING;
+        }
         break;
     case _SUSPENDED:
-        // on_suspend();
-        if (m_emitter) m_emitter->emit("suspend");
+        if (m_state != m_last_state) {
+            // on_suspend();
+            if (m_emitter) m_emitter->emit("suspend");
+            m_last_state = m_state;
+        }
         break;
     }
 }
 
-void Task::schedule() {
-    if (!__cur) return;
 
-    switch (__cur->m_state) {
-    case _RUNNING: {
-        tick_t tm = ticks();
-        if (tm >= __cur->m_next_run) {
-            // do next schedule first to make it availe in run()
-            // In additon, run() may do some rescheduling
-            __cur->schedule_next();
-            __cur->run();
-        }
-        break;
-    };
-    case _SLEEPING: {
-        tick_t tm = ticks();
-        if (tm >= __cur->m_next_run) {
-            __cur->_set_state(_RUNNING);
-            __cur->schedule_next();
-        }
-        break;
-    }
-    default:
-        break;
-    }
+void Task::schedule()
+{
+    if (!__cur) return;
+    __cur->_schedule();
     __cur = (__cur->m_next) ? __cur->m_next : __head; // move on to next task
     // dmsg("tid=%d s%d t=%ld n=%ld i=%ld",  __cur->m_id, __cur->m_state, ticks(), __cur->m_next_run, __cur->m_interval);
 }

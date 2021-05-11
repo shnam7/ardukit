@@ -25,7 +25,6 @@ public:
         const char          *name;
         event_listener      listener;
         void                *data;
-        u64_t               data_ex;        // extra data;
         bool                once;
     };
 
@@ -45,19 +44,18 @@ public:
     bool init(unsigned max_event_names=10, unsigned max_listeners=10)
         { return m_names.init(max_event_names) && m_listeners.init(max_listeners); }
 
-    bool on(const char *event_name, event_listener listener, void *data=0, u64_t data_ex=0)
-        { return _on(event_name, listener, data, data_ex); }
+    bool on(const char *event_name, event_listener listener, void *data=0)
+        { return _on(event_name, listener, data); }
 
     bool off(const char *event_name, event_listener listener);
 
-    bool once(const char *event_name, event_listener listener, void *data=0, u64_t data_ex=0)
-        { return _on(event_name, listener, data, data_ex, true); }
+    bool once(const char *event_name, event_listener listener, void *data=0)
+        { return _on(event_name, listener, data, true); }
 
     bool emit(const char *event_name);
 
 protected:
-    bool _on(const char *event_name, event_listener listener, void *data=0,
-            u64_t data_ex=0, bool once=false);
+    bool _on(const char *event_name, event_listener listener, void *data=0, bool once=false);
 
     //--- helper function
     const char *__find_event_name(const char *event_name);

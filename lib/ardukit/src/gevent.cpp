@@ -50,8 +50,7 @@ bool EventEmitter::emit(const char *event_name)
     return true;
 }
 
-bool EventEmitter::_on(const char *event_name, event_listener listener,
-        void *data, u64_t data_ex, bool once)
+bool EventEmitter::_on(const char *event_name, event_listener listener, void *data, bool once)
 {
     if (strlen(event_name) > EVENT_NAME_LENGTH_MAX) {
         dmsg("EventEmitter::_on: event_name is too long. max length=%d\n", EVENT_NAME_LENGTH_MAX);
@@ -67,7 +66,7 @@ bool EventEmitter::_on(const char *event_name, event_listener listener,
     if (m_listeners.available() <= 0) __squeez_listeners(); // try to make space
     if (m_listeners.available() <= 0) return false; // still no space, then fail
 
-    event_block eb = { name, listener, data, data_ex, once };
+    event_block eb = { name, listener, data, once };
     return m_listeners.put(eb);
 }
 

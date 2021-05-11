@@ -16,7 +16,6 @@ namespace adk
         void run_timer();
     }
 
-
     inline unsigned set_timeout(void (*func)(void *), msec_t timeout_msec, void *data=0)
         { return timer_helpers::set_timer_block(func, data, timeout_msec, true); }
 

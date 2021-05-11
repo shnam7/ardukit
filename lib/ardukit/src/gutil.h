@@ -12,3 +12,4 @@
 
 // extern GSerialType GSerial;
 void dmsg(const char *format, ...);
+char *u64_to_str(char *buf, unsigned long long n, unsigned base=10);

@@ -4,14 +4,15 @@ using namespace adk;
 
 Task t1, t2, t3;
 
-void task_func(Task &t)
+void task_func(void *)
 {
-    dmsg("Task %d is running. tick=%ld", t.task_id(), ticks());
+    Task *t = Task::get_current();
+    dmsg("Task %d is running. tick=%ld\n", t->task_id(), t2u(ticks()));
 }
 
 void setup()
 {
-    Serial.begin(12800);
+    Serial.begin(128000);
 
     // init tasks
     t1.set_interval(1000).start(task_func); // periodic task w/ interval=1sec

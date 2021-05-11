@@ -5,39 +5,22 @@
  */
 
 #include "gtime.h"
+#include <limits.h>
 
-// using event_listener = GEventQ::event_listener;
+using namespace adk;
 
-// static GQue _timerEventQ(GTimer::TIMER_EVENT_QUE_SIZE, sizeof(event_listener));
+tick_t adk::ticks()
+{
+    static uint64_t         _curr_tick = 0; // (uint64_t)ULONG_MAX - 10000; // overflow test
+    static unsigned long    mticks_last = 0;
 
-// handle_t GTimer::setTimeout(GEvent::Handler handler, tick_t msec, void *data)
-// {
-//     event_listener el = {handler, data, uticks() + msec * 1000, false};
-//     return _timerEventQ.put(&el) ? (handle_t)handler : 0;
-// }
+    unsigned long mticks = micros();
+    uint64_t delta = (mticks < mticks_last)
+        ? ((uint64_t)ULONG_MAX - mticks_last) + mticks
+        : mticks - mticks_last;
 
-// void GTimer::clearTimeout(handle_t handle)
-// {
-//     event_listener el;
-//     unsigned len = _timerEventQ.length();
-//     while (len-- > 0) {
-//         _timerEventQ.get(&el);
-//         if (el.handler != (GEvent::Handler)handle) _timerEventQ.put(&el);
-//     }
-// }
+    mticks_last = mticks;
+    _curr_tick += delta;
 
-// void GTimer::processEvents()
-// {
-//     event_listener el;
-//     unsigned len = _timerEventQ.length();
-//     tick_t tm = GTimer::uticks();
-//     while (len-- > 0) {
-//         _timerEventQ.get(&el);
-//         if (tm >= el.extraData) {
-//             GEvent event = { "timer", el.data, el.extraData };
-//             el.handler(event);
-//             continue;
-//         }
-//         _timerEventQ.put(&el);
-//     }
-// };
+    return (tick_t)_curr_tick;
+}

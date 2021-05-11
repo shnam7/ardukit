@@ -3,7 +3,7 @@
 using namespace adk;
 
 void setup() {
-    Serial.begin(9600);
+    Serial.begin(128000);
 }
 
 void loop() {
@@ -13,7 +13,7 @@ void loop() {
         usec_t usec_elapsed = elapsed_usec(tm0);
         msec_t msec_elapsed = elapsed_msec(tm0);
 
-        dmsg("start=%ld elapsed=%d(us), %d(ms)\n",
+        dmsg("start=%lu elapsed=%lu(us), %lu(ms)\n",
             ticks_to_usec(tm0), usec_elapsed, msec_elapsed
         );
     }

@@ -7,7 +7,7 @@ int delta = 5;
 
 void set_LED(void *e)
 {
-    dmsg("LED brightness: %d", brightness);
+    dmsg("LED brightness: %d\n", brightness);
     brightness += delta;
     if (brightness == 255 || brightness == 0) delta = -delta;
 }
@@ -19,9 +19,10 @@ void start(void *)
 
 void setup()
 {
-    Serial.begin(9600);
-    dmsg("Will start in 1 sec...");
-    set_timeout(set_LED, 1000);
+    Serial.begin(128000);
+
+    dmsg("Will start in 1 sec...\n");
+    set_timeout(start, 1000);
 }
 
 void loop()
