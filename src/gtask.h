@@ -10,11 +10,6 @@
 #include "gtime.h"
 #include "gevent.h"
 
-#ifndef ADK_TASK_EVENT_QUE_SIZE
-#define ADK_TASK_EVENT_QUE_SIZE     16
-#endif
-
-
 namespace adk {
 
 //-----------------------------------------------------------------------------

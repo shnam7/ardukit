@@ -49,7 +49,7 @@ void Button::scan(void *data) {
     }
     if (btn->m_is_pressed && cur <= 0) {
         btn->m_is_pressed = false;
-        btn->emit("releas");
+        btn->emit("release");
     }
     // dmsg("scan: interval=%d, cur==%d isPressed=%d", btn->m_sensitivity, cur, btn->isPressed());
     if (btn->m_enabled) set_timeout(scan, SCAN_INTERVAL, btn);

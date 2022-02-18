@@ -24,10 +24,11 @@ void event_handler(EventEmitter::event &e)
     }
 }
 
-void task_func(Task &t)
+void task_func(void *)
 {
+    Task *t = Task::get_current();
     // dmsg("task %d running...before sleep call\n", Task::get_current()->task_id());
-    t.sleep(2000);  // task does not stop here - it just change the task state to sleep
+    t->sleep(2000);  // task does not stop here - it just change the task state to sleep
     // dmsg("task %d running...after sleep call\n", Task::get_current()->task_id());
 }
 
