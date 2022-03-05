@@ -22,7 +22,7 @@ struct eblock {
 static unsigned         _counter = 0;
 static Queue<eblock>    _eque(MAX_CALL_STACK);
 
-void clear_timeout(unsigned id)
+void adk::clear_timeout(unsigned id)
 {
     eblock *peek = _eque.peek();
     while (peek) {
