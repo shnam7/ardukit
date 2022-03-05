@@ -1,7 +1,7 @@
 import os
 import zipfile
 
-version = '1.0.0'
+version = ''
 path = './__trash/'
 dirs = ['src', 'examples']
 files = ['library.properties', 'keywords.txt', 'README.md']
