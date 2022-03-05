@@ -12,13 +12,12 @@
       {
         "name": "Robin Nam",
         "email": "shnam7@gmail.com",
-        "url": "http://www.windron.com/simplete",
+        "url": "https://github.com/shnam7",
         "maintainer": true
       },
       {
         "name": "Hyeonmin Lee",
-        "url": "http://www.windron.com/hmlee7",
-        "email": "hmlee7@gmail.com"
+        "url": "http://github.com/hmlee7"
       }
     ],
     "license": "MIT",
