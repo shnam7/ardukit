@@ -1,10 +1,16 @@
-#FUNCTIONS COLOR        #D35400 - ORANGE        KEYWORD1
-#FUNCTIONS COLOR        #D35400 - ORANGE        KEYWORD2
-#STRUCTURE COLOR        #728E00 - GREEN         KEYWORD3
-#VARIABLES COLOR        #00979C - BLUE          LITERAL1
+#ref https://arduino.github.io/arduino-cli/0.21/library-specification/#keywordstxt-format
 
-#--- KEYWORD1 - Classes
-adk                 KEYWORD1
+#--- KEYWORD1 - datatypes (including classes)
+i8_t                KEYWORD1
+i16_t               KEYWORD1
+i32_t               KEYWORD1
+i64_t               KEYWORD1
+u8_t                KEYWORD1
+u16_t               KEYWORD1
+u32_t               KEYWORD1
+u64_t               KEYWORD1
+uptr_t              KEYWORD1
+real                KEYWORD1
 EventEmitter        KEYWORD1
 Button              KEYWORD1
 EdgeTrigger         KEYWORD1
@@ -12,13 +18,15 @@ Task                KEYWORD1
 Linkable            KEYWORD1
 List                KEYWORD1
 List                KEYWORD1
-math                KEYWORD1
 CircularQueue       KEYWORD1
+Iterator            KEYWORD1
 Queue               KEYWORD1
+tick_t              KEYWORD1
+usec_t              KEYWORD1
+msec_t              KEYWORD1
 
 
-
-#--- KEYWORD2 - Methods and Functions
+#--- KEYWORD2 - functions
 run                 KEYWORD2
 dmsg                KEYWORD2
 enable              KEYWORD2
@@ -102,10 +110,14 @@ clear_timeout       KEYWORD2
 u64_to_str          KEYWORD2
 
 
-#--- KEYWORD3 - Structures
+#--- KEYWORD3 - structures
 
 
-#--- LITERAL1 - Literals
+#--- LITERAL1 - constants
 REAL_EPSILON        LITERAL1
 REAL_MIN            LITERAL1
 REAL_MAX            LITERAL1
+
+#--- LITERAL1 - ? (put namespace here)
+adk                 KEYWORD1
+math                KEYWORD1
