@@ -30,7 +30,7 @@ public:
 
     void enable(int pin_id = -1);
     void disable() { m_enabled = false; }
-    bool isPressed() { return m_is_pressed; }
+    bool is_pressed() { return m_is_pressed; }
 
 protected:
     static void scan(void *data);

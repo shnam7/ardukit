@@ -1,0 +1,111 @@
+#FUNCTIONS COLOR        #D35400 - ORANGE        KEYWORD1
+#FUNCTIONS COLOR        #D35400 - ORANGE        KEYWORD2
+#STRUCTURE COLOR        #728E00 - GREEN         KEYWORD3
+#VARIABLES COLOR        #00979C - BLUE          LITERAL1
+
+#--- KEYWORD1 - Classes
+adk                 KEYWORD1
+EventEmitter        KEYWORD1
+Button              KEYWORD1
+EdgeTrigger         KEYWORD1
+Task                KEYWORD1
+Linkable            KEYWORD1
+List                KEYWORD1
+List                KEYWORD1
+math                KEYWORD1
+CircularQueue       KEYWORD1
+Queue               KEYWORD1
+
+
+
+#--- KEYWORD2 - Methods and Functions
+run                 KEYWORD2
+dmsg                KEYWORD2
+enable              KEYWORD2
+disable             KEYWORD2
+is_pressed          KEYWORD2
+set_threshould      KEYWORD2
+is_high             KEYWORD2
+detect_edge         KEYWORD2
+init                KEYWORD2
+on                  KEYWORD2
+off                 KEYWORD2
+once                KEYWORD2
+emit                KEYWORD2
+append              KEYWORD2
+prepend             KEYWORD2
+add                 KEYWORD2
+remove              KEYWORD2
+remove              KEYWORD2
+first               KEYWORD2
+last                KEYWORD2
+next_of             KEYWORD2
+prev_of             KEYWORD2
+is_empty            KEYWORD2
+length              KEYWORD2
+is_zero             KEYWORD2
+round_up            KEYWORD2
+round_dn            KEYWORD2
+degree              KEYWORD2
+radian              KEYWORD2
+phase               KEYWORD2
+clear               KEYWORD2
+put                 KEYWORD2
+get                 KEYWORD2
+push                KEYWORD2
+pop                 KEYWORD2
+peek                KEYWORD2
+peek_next           KEYWORD2
+peek_prev           KEYWORD2
+head                KEYWORD2
+tail                KEYWORD2
+begin               KEYWORD2
+end                 KEYWORD2
+item_size           KEYWORD2
+is_full             KEYWORD2
+available           KEYWORD2
+capacity            KEYWORD2
+set_interval        KEYWORD2
+set_event_emitter   KEYWORD2
+start               KEYWORD2
+sleep               KEYWORD2
+awake               KEYWORD2
+suspend             KEYWORD2
+resume              KEYWORD2
+is_active           KEYWORD2
+is_running          KEYWORD2
+is_sleeping         KEYWORD2
+is_suspended        KEYWORD2
+task_id             KEYWORD2
+interval            KEYWORD2
+data                KEYWORD2
+schedule_next       KEYWORD2
+ticks               KEYWORD2
+ticks_to_usec       KEYWORD2
+ticks_to_msec       KEYWORD2
+usec_to_ticks       KEYWORD2
+usec_to_msec        KEYWORD2
+msec_to_ticks       KEYWORD2
+msec_to_usec        KEYWORD2
+t2m                 KEYWORD2
+t2u                 KEYWORD2
+u2t                 KEYWORD2
+u2m                 KEYWORD2
+m2t                 KEYWORD2
+m2u                 KEYWORD2
+elapsed_ticks       KEYWORD2
+elapsed_usec        KEYWORD2
+elapsed_msec        KEYWORD2
+set_timeout         KEYWORD2
+set_interval        KEYWORD2
+clear_timeout       KEYWORD2
+u64_to_str          KEYWORD2
+
+
+#--- KEYWORD3 - Structures
+
+
+#--- LITERAL1 - Literals
+REAL_EPSILON        LITERAL1
+REAL_MIN            LITERAL1
+REAL_MAX            LITERAL1
