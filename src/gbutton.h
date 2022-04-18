@@ -19,7 +19,7 @@ class Button : public EventEmitter {
 protected:
     int         m_pin_id        = -1;
     int         m_value         = 0;
-    int         m_io_type       = 0;
+    int         m_io_type       = INPUT;
     int         m_sensitivity   = 2;
     bool        m_enabled       = false;
     bool        m_is_pressed    = false;

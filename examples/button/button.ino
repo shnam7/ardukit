@@ -2,8 +2,8 @@
 
 void on_button_event(adk::EventEmitter::event &e)
 {
-    dmsg("Button Event: %s", e.name);
-};
+    dmsg("Button Event: %s\n", e.name);
+}
 
 adk::Button b1(8, INPUT_PULLUP);
 

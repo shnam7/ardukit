@@ -16,9 +16,11 @@ namespace adk
         void run_timer();
     }
 
+    // return non-zero timer ID on success. return zero on failure (timer que is full)
     inline unsigned set_timeout(void (*func)(void *), msec_t timeout_msec, void *data=0)
         { return timer_helpers::set_timer_block(func, data, timeout_msec, true); }
 
+    // return non-zero timer ID on success. return zero on failure (timer que is full)
     inline unsigned set_interval(void (*func)(void *), msec_t interval_msec, void *data=0)
         { return timer_helpers::set_timer_block(func, data, interval_msec, false); }
 

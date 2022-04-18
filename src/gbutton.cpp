@@ -37,7 +37,6 @@ void Button::scan(void *data) {
     int delta = digitalRead(btn->m_pin_id) > 0 ? 1 : -1;
     if (btn->m_io_type == INPUT_PULLUP) delta = -delta;
 
-    // int preVal = btn->m_value;
     int cur = btn->m_value + delta;
     if (cur > btn->m_sensitivity) cur = btn->m_sensitivity;
     if (cur < 0) cur = 0;
@@ -51,6 +50,6 @@ void Button::scan(void *data) {
         btn->m_is_pressed = false;
         btn->emit("release");
     }
-    // dmsg("scan: interval=%d, cur==%d is_pressed=%d", btn->m_sensitivity, cur, btn->is_pressed());
+    // dmsg("scan: sensitiviey=%d, delta=%d cur==%d is_pressed=%d\n", btn->m_sensitivity, delta, cur, btn->is_pressed());
     if (btn->m_enabled) set_timeout(scan, SCAN_INTERVAL, btn);
 }
