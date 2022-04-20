@@ -26,7 +26,7 @@ void adk::clear_timeout(unsigned id)
 {
     eblock *peek = _eque.peek();
     while (peek) {
-        if (peek->id == id) peek->func = 0;
+        if (peek->id == id) { peek->func=0; break; }
         peek = _eque.peek_next(peek);
     }
 }
@@ -34,7 +34,7 @@ void adk::clear_timeout(unsigned id)
 unsigned timer_helpers::set_timer_block(void (*func)(void *), void *data, msec_t interval_msec, bool once)
 {
     if (_eque.is_full()) return 0;  // invalid id
-    _eque.put();    // make room ath the end
+    _eque.put();    // make room at the end
     eblock *eb = _eque.last();
 
     eb->func = func;

@@ -5,7 +5,6 @@
  */
 
 #include "platform.h"
-#include "gtime.h"
 #include "gtimer.h"
 #include "gbutton.h"
 
@@ -22,17 +21,28 @@ Button::Button(int pin_id, int io_type, int sensitivity)
     if (m_sensitivity < 0) m_sensitivity = 0;
 }
 
-Button::~Button() {
+Button::~Button()
+{
+    disable();
 }
 
-void Button::enable(int pin_id) {
+void Button::enable(int pin_id)
+{
     if (pin_id >= 0) m_pin_id = pin_id;
     if (m_io_type == INPUT_PULLUP) digitalWrite(m_pin_id, INPUT_PULLUP);
-    set_timeout(scan, SCAN_INTERVAL, this);
-    m_enabled = true;
+    if (!m_timer_id) m_timer_id = set_timeout(scan, SCAN_INTERVAL, this);
 }
 
-void Button::scan(void *data) {
+void Button::disable()
+{
+    if (m_timer_id) {
+        clear_timeout(m_timer_id);
+        m_timer_id = 0;
+    }
+}
+
+void Button::scan(void *data)
+{
     Button *btn = (Button *)data;
     int delta = digitalRead(btn->m_pin_id) > 0 ? 1 : -1;
     if (btn->m_io_type == INPUT_PULLUP) delta = -delta;
@@ -51,6 +61,6 @@ void Button::scan(void *data) {
         btn->emit("release");
     }
 
-    dmsg("scan: sensitiviey=%d, delta=%d cur==%d is_pressed=%d\n", btn->m_sensitivity, delta, cur, btn->is_pressed());
-    if (btn->m_enabled) set_timeout(scan, SCAN_INTERVAL, btn);
+    // dmsg("scan: sensitivity=%d, delta=%d cur==%d is_pressed=%d\n", btn->m_sensitivity, delta, cur, btn->is_pressed());
+    if (btn->m_timer_id) set_timeout(scan, SCAN_INTERVAL, btn); // if enabled, set next scan schedule
 }
