@@ -1,6 +1,6 @@
 {
     "name": "ardukit",
-    "keywords": "task, queue, list, event, button, edge trigger, timer",
+    "keywords": "task, queue, list, event, button, edge detector, timer",
     "description": "Foundation library toolkit for easier arduino programming",
     "repository":
     {

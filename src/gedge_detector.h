@@ -1,7 +1,7 @@
 /**
  *  @package Ardukit
  *
- *  @module EdgeTrigger - Analog input edge detector
+ *  @module EdgeDetector - Rising and falling edge detector for analog input
  *  @#notes
  *    - events: 'rising', 'falling'
  */

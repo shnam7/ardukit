@@ -13,7 +13,7 @@ uptr_t              KEYWORD1
 real                KEYWORD1
 EventEmitter        KEYWORD1
 Button              KEYWORD1
-EdgeTrigger         KEYWORD1
+EdgeDetector        KEYWORD1
 Task                KEYWORD1
 Linkable            KEYWORD1
 List                KEYWORD1

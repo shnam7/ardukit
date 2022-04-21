@@ -7,10 +7,10 @@ Ardukit is a foundation library toolkit for easier arduino programming.
 - glist: simple doubly linked list
 - gque: simple circular Queue
 - gtime: time ticks and conversion
-- gtimer: timer callback services
+- gtimer: timer callback service
 - gutil: debuging functions, etc.
 - gbutton: Noise filteriing button input handler
-- gedge_trigger: Noise filtering analog input up/down edge detector
+- gedge_detector: Noise filtering, riging and falling edge detector for analog input devices
 
 
 ## Quick Examples
@@ -159,11 +159,3 @@ Button triggers "press" and "release" events when changes are detected.
 
 ## Note
 Be sure to call adk::run() in the loop() function to enable Task and timer callback functions.
-
-
-## Library Source
-Check [here](lib/ardukit)
-
-
-## Examples
-To test examples, copy one from "lib/ardukit/examples" directory to "src/".
