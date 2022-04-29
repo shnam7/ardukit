@@ -21,3 +21,4 @@
 
 #include "gedge_detector.h"
 #include "gbutton.h"
+#include "gmv_filter.h"
