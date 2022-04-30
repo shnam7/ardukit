@@ -6,7 +6,7 @@
 #include <stdio.h>
 
 
-int main()
+void setup()
 {
     adk::MVFilter mvf(5);
 
@@ -14,7 +14,11 @@ int main()
         double r = mvf.filter(i * 1.3);
         int val = round(r);
         String s(r);
-        printf("val=%d real-val=%s\n", val, s.c_str());
+        dmsg("val=%d real-val=%s\n", val, s.c_str());
     }
-    return 0;
+}
+
+void loop()
+{
+    // do nothing
 }
