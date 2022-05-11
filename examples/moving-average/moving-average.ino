@@ -3,8 +3,6 @@
  */
 
 #include "ardukit.h"
-#include <stdio.h>
-
 
 void setup()
 {

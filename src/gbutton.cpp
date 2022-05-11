@@ -15,10 +15,11 @@ const int SCAN_INTERVAL = 20;   // msec
 //-----------------------------------------------------------------------------
 //  class Button
 //-----------------------------------------------------------------------------
-Button::Button(int pin_id, int io_type, int sensitivity)
-    : m_pin_id(pin_id), m_io_type(io_type), m_sensitivity(sensitivity)
+Button::Button(int pin_id, int mode, int sensitivity)
+    : m_pin_id(pin_id), m_mode(mode), m_sensitivity(sensitivity)
 {
     if (m_sensitivity < 0) m_sensitivity = 0;
+    if ((m_mode & 0x0FF) == INPUT_PULLUP) m_mode |= LOW_ON_PRESS;
 }
 
 Button::~Button()
@@ -26,10 +27,19 @@ Button::~Button()
     disable();
 }
 
-void Button::enable(int pin_id)
+Button& Button::bind(int pin_id, int mode, int sensitivity)
 {
-    if (pin_id >= 0) m_pin_id = pin_id;
-    if (m_io_type == INPUT_PULLUP) digitalWrite(m_pin_id, INPUT_PULLUP);
+    if (pin_id > 0) {
+        m_pin_id = pin_id;
+        m_mode = mode;
+        m_sensitivity = (sensitivity < 0) ? 0 : sensitivity;
+    }
+    return *this;
+}
+
+void Button::enable()
+{
+    if ((m_mode & 0x00FF) == INPUT_PULLUP) pinMode(m_pin_id, INPUT_PULLUP);
     if (!m_timer_id) m_timer_id = set_timeout(scan, SCAN_INTERVAL, this);
 }
 
@@ -45,7 +55,7 @@ void Button::scan(void *data)
 {
     Button *btn = (Button *)data;
     int delta = digitalRead(btn->m_pin_id) > 0 ? 1 : -1;
-    if (btn->m_io_type == INPUT_PULLUP) delta = -delta;
+    if ((btn->m_mode & 0xFF00) == LOW_ON_PRESS) delta = -delta;
 
     int cur = btn->m_value + delta;
     if (cur > btn->m_sensitivity) cur = btn->m_sensitivity;
