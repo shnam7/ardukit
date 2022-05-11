@@ -39,7 +39,7 @@ Button& Button::bind(int pin_id, int mode, int sensitivity)
 
 void Button::enable()
 {
-    if ((m_mode & 0x00FF) == INPUT_PULLUP) pinMode(m_pin_id, INPUT_PULLUP);
+    pinMode(m_pin_id, (m_mode & 0x00FF) == INPUT_PULLUP ? INPUT_PULLUP : INPUT);
     if (!m_timer_id) m_timer_id = set_timeout(scan, SCAN_INTERVAL, this);
 }
 

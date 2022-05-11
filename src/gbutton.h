@@ -18,7 +18,7 @@ namespace adk {
 class Button : public EventEmitter {
 public:
     static const int   HIGH_ON_PRESS        = 0;        // IO read returns HIGH on button press
-    static const int   LOW_ON_PRESS         = 0x100;   // IO read returns LOW on button press
+    static const int   LOW_ON_PRESS         = 0x100;    // IO read returns LOW on button press
     static const int   EXTERNAL_PULLUP      = INPUT + LOW_ON_PRESS;
     static const int   EXTERNAL_PULLDOWN    = INPUT + HIGH_ON_PRESS;
 
