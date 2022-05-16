@@ -11,6 +11,7 @@ Ardukit is a foundation library toolkit for easier arduino programming.
 - gutil: debuging functions, etc.
 - gbutton: Noise filteriing button input handler
 - gedge_detector: Noise filtering, riging and falling edge detector for analog input devices
+- gmv_filter: Moving Average filter
 
 
 ## Quick Examples
