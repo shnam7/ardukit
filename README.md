@@ -122,7 +122,7 @@ void set_LED(void *)
 
 void setup()
 {
-    Serial.begin(128000);
+    Serial.begin(115200);
     set_timeout(set_LED, 0);
 }
 
@@ -143,7 +143,7 @@ adk::Button b1(8, INPUT_PULLUP);
 
 void setup()
 {
-    Serial.begin(128000);
+    Serial.begin(115200);
     b1.enable();    // activate change detection
     b1.on("press", on_button_event);
     b1.on("release", on_button_event);

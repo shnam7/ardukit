@@ -16,7 +16,7 @@ Button buttons[3];      // 3 INPUT_PULLUP buttons, not connected to any pins yet
 
 void setup()
 {
-    Serial.begin(128000);
+    Serial.begin(115200);
 
     b1.enable();
     b1.on("press", on_button_event, &b1);

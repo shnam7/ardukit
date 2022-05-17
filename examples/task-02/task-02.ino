@@ -34,7 +34,7 @@ void task_func(void *)
 
 void setup()
 {
-    Serial.begin(128000);
+    Serial.begin(115200);
 
     EventEmitter evm(3, 5*TASK_COUNT);
     for (int i = 0; i < TASK_COUNT; i++) {

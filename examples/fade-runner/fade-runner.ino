@@ -66,7 +66,7 @@ void fade_restarter(EventEmitter::event &e)
 
 void setup()
 {
-    Serial.begin(128000);
+    Serial.begin(115200);
     for (int i = 0; i < LED_COUNT; i++) {
         faders[i]
             .config(LED_PINS[i])

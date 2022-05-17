@@ -19,7 +19,7 @@ void start(void *)
 
 void setup()
 {
-    Serial.begin(128000);
+    Serial.begin(115200);
 
     dmsg("Will start in 1 sec...\n");
     set_timeout(start, 1000);

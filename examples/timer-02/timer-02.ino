@@ -21,7 +21,7 @@ void set_LED(void *)
 
 void setup()
 {
-    Serial.begin(128000);
+    Serial.begin(115200);
     set_timeout(set_LED, 0);
 }
 

@@ -3,7 +3,7 @@
 using namespace adk;
 
 void setup() {
-    Serial.begin(128000);
+    Serial.begin(115200);
 }
 
 void loop() {

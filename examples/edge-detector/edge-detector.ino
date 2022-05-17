@@ -23,7 +23,7 @@ void on_falling(EventEmitter::event &)
 
 void setup()
 {
-    Serial.begin(128000);
+    Serial.begin(115200);
 
     sensor1.set_threshoulds(700, 1000)
         .set_input_reader(read_input)

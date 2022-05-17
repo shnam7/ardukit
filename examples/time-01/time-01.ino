@@ -6,7 +6,7 @@ tick_t tm0;
 
 void setup()
 {
-    Serial.begin(128000);
+    Serial.begin(115200);
     tm0 = ticks();
 }
 

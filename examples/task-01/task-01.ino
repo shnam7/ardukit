@@ -12,7 +12,7 @@ void task_func(void *)
 
 void setup()
 {
-    Serial.begin(128000);
+    Serial.begin(115200);
 
     // init tasks
     t1.set_interval(1000).start(task_func); // periodic task w/ interval=1sec
