@@ -32,7 +32,8 @@ adk::set_interval(foo, 3000);           // function call
 
 And, be sure to call **adk::run()** in the loop() function to enable ardukit engine, which is running Task instances, timer callback functions, etc.
 
-This is a typical source code format to use ardukit.
+Typical source code format using ardukit would be like this:
+
 ```cpp
 #include <adrukit.h>
 
@@ -47,7 +48,6 @@ void loop()
 {
     adk::run(); // run ardukit engine
 }
-
 ```
 
 
