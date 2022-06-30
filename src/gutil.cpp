@@ -21,7 +21,7 @@ void dmsg(const char *format, ...) {
     va_end(arg_ptr);
 }
 
-char *u64_to_str(char *outbuf, unsigned long long n, unsigned base)
+char *adk::u64_to_str(char *outbuf, unsigned long long n, unsigned base)
 {
     unsigned char buf[16 * sizeof(long)]; // Assumes 8-bit chars.
     if (n == 0) {

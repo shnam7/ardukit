@@ -6,6 +6,7 @@
 
 #include "adkdef.h"
 #include "gque.h"
+#include "gutil.h"
 #include <string.h>
 
 using namespace adk;

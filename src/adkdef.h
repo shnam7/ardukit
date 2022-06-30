@@ -18,7 +18,3 @@ typedef uint16_t    u16_t;
 typedef uint32_t    u32_t;
 typedef uint64_t    u64_t;
 typedef uintptr_t   uptr_t;
-
-
-//--- debug utils
-void dmsg(const char *fmt, ...);

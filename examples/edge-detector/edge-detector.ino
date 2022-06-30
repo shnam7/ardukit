@@ -1,9 +1,7 @@
 #include "ardukit.h"
-#include <SoftwareSerial.h>
 
 using namespace adk;
 
-SoftwareSerial mySoftwareSerial(10, 11);
 EdgeDetector sensor1;
 
 float read_input(void *)
