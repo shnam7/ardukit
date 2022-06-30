@@ -176,3 +176,26 @@ void loop()
     adk::run(); // run ardukit engine
 }
 ```
+
+
+## Examples
+
+Refer to the examples folder for basic and advanced ardukit usage.
+
+- [examples/01.Basics/blink](examples/01.Basics/blink)
+- [examples/01.Basics/fade](examples/01.Basics/fade)
+- [examples/02.Digital/button](examples/02.Digital/button)
+- [examples/02.Digital/debounce](examples/02.Digital/debounce)
+- [examples/02.Digital/toneMelody](examples/02.Digital/toneMelody)
+- [examples/03.Analog/fading](examples/03.Analog/fading)
+- [examples/button](examples/button)
+- [examples/edge-detector](examples/edge-detector)
+- [examples/fade-runner](examples/fade-runner)
+- [examples/fader](examples/fader)
+- [examples/moving-average](examples/moving-average)
+- [examples/task-01](examples/task-01)
+- [examples/task-02](examples/task-02)
+- [examples/time-01](examples/time-01)
+- [examples/time-02](examples/time-02)
+- [examples/timer-01](examples/timer-01)
+- [examples/timer-02](examples/timer-02)
