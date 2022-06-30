@@ -19,16 +19,16 @@ ardukit is a foundation library toolkit for easier arduino programming.
 ardukit is using namespace **adk** for all public identifiers except dmsg().
 So, to use ardukit classes or functions, namespace declaration is required.
 
-    ```cpp
-    using namespace adk;
-    ```
+```cpp
+using namespace adk;
+```
 
 Or, **adk** should be prefixed to classes or functions like this:
 
-    ```cpp
-    adk::Button b1(8, INPUT_PULLUP);        // Button class instance
-    adk::dmsg(...);                         // function call
-    ```
+```cpp
+adk::Button b1(8, INPUT_PULLUP);        // Button class instance
+adk::set_interval(foo, 3000);           // function call
+```
 
 And, be sure to call **adk::run()** in the loop() function to enable ardukit engine, which is running Task instances, timer callback functions, etc.
 
@@ -145,10 +145,10 @@ void loop()
 }
 ```
 
-### Easy non-preemptive multi-tasking.
+### Using Task class
 
 This is a simple example running multiple periodic tasks.
-You can refer to the examples folder for more advanced use cases.
+You can refer to examples folder for more advanced samples using task class.
 
 ```cpp
 #include <ardukit.h>
