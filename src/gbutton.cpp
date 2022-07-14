@@ -10,13 +10,11 @@
 
 using namespace adk;
 
-const int SCAN_INTERVAL = 20;   // msec
-
 //-----------------------------------------------------------------------------
 //  class Button
 //-----------------------------------------------------------------------------
-Button::Button(int pin_id, int mode, int sensitivity)
-    : m_pin_id(pin_id), m_mode(mode), m_sensitivity(sensitivity)
+Button::Button(int pin_id, int mode, int sensitivity, unsigned max_listeners, unsigned scan_interval)
+    : EventEmitter(2, max_listeners), m_pin_id(pin_id), m_mode(mode), m_sensitivity(sensitivity), m_scan_interval(scan_interval)
 {
     if (m_sensitivity < 0) m_sensitivity = 0;
     if ((m_mode & 0x0FF) == INPUT_PULLUP) m_mode |= LOW_ON_PRESS;
@@ -40,7 +38,7 @@ Button& Button::bind(int pin_id, int mode, int sensitivity)
 void Button::enable()
 {
     pinMode(m_pin_id, (m_mode & 0x00FF) == INPUT_PULLUP ? INPUT_PULLUP : INPUT);
-    if (!m_timer_id) m_timer_id = set_timeout(scan, SCAN_INTERVAL, this);
+    if (!m_timer_id) m_timer_id = set_timeout(scan, m_scan_interval, this);
 }
 
 void Button::disable()
@@ -72,5 +70,5 @@ void Button::scan(void *data)
     }
 
     // dmsg("scan: sensitivity=%d, delta=%d cur==%d is_pressed=%d\n", btn->m_sensitivity, delta, cur, btn->is_pressed());
-    if (btn->m_timer_id) set_timeout(scan, SCAN_INTERVAL, btn); // if enabled, set next scan schedule
+    if (btn->m_timer_id) set_timeout(scan, btn->m_scan_interval, btn); // if enabled, set next scan schedule
 }

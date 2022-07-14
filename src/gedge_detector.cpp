@@ -9,13 +9,12 @@
 
 using namespace adk;
 
-const int SCAN_INTERVAL = 20;   // msec
-
 //-----------------------------------------------------------------------------
 //  class EdgeDetector
 //-----------------------------------------------------------------------------
-EdgeDetector::EdgeDetector(float low_threshould, float high_threshould, int max_listeners)
-    : EventEmitter(2, max_listeners), m_low_threshould(low_threshould), m_high_threshould(high_threshould)
+EdgeDetector::EdgeDetector(float low_threshould, float high_threshould, int max_listeners, unsigned scan_interval)
+    : EventEmitter(2, max_listeners), m_low_threshould(low_threshould), m_high_threshould(high_threshould),
+      m_scan_interval(scan_interval)
 {
 }
 
@@ -41,7 +40,7 @@ EdgeDetector& EdgeDetector::set_input_reader(float (*input_reader)(void *data), 
 
 void EdgeDetector::start_input_scan()
 {
-    if (!m_timer_id) m_timer_id = set_timeout(scan, SCAN_INTERVAL, this);
+    if (!m_timer_id) m_timer_id = set_timeout(scan, m_scan_interval, this);
 }
 
 void EdgeDetector::stop_input_scan()
@@ -72,5 +71,5 @@ void EdgeDetector::scan(void *data)
 
     inst->detect_edge(inst->read_input());
 
-    if (inst->m_timer_id) set_timeout(scan, SCAN_INTERVAL, inst); // if enabled, set next scan schedule
+    if (inst->m_timer_id) set_timeout(scan, inst->m_scan_interval, inst); // if enabled, set next scan schedule
 }

@@ -3,6 +3,7 @@
 ## 1.2
 - Optimize timer memory footprint
 - Add timer event queue resizng support
+- Add custom scan interval for Button and EdgeDetector
 
 ## 1.1
 - Add EdgeDetector (deprecating EdgeTrigger)
