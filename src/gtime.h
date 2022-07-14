@@ -15,8 +15,10 @@ typedef uint64_t        tick_t;   // timer tick count type
 typedef unsigned long   usec_t;   // microsec time type
 typedef unsigned long   msec_t;   // millisec time type
 
-//--- get time elapsed since system start in msec
+//--- get time elapsed since system start in usec
 tick_t ticks();
+inline usec_t ticks_usec() { return micros(); };
+inline msec_t ticks_msec() { return millis(); };
 
 inline usec_t ticks_to_usec(tick_t ticks) { return (usec_t)ticks; }
 inline msec_t ticks_to_msec(tick_t ticks) { return (msec_t)(ticks_to_usec(ticks) / 1000); }
@@ -38,5 +40,8 @@ inline tick_t elapsed_ticks(tick_t tm) { return ticks() - tm; }
 inline tick_t elapsed_ticks(tick_t tm1, tick_t tm2) { return tm2 - tm1; }
 inline usec_t elapsed_usec(tick_t tm) { return ticks_to_usec(elapsed_ticks(tm)); }
 inline msec_t elapsed_msec(tick_t tm) { return ticks_to_msec(elapsed_ticks(tm)); }
+
+inline usec_t elapsed_usec(usec_t tm) { return ticks_to_usec(elapsed_ticks(u2t(tm))); }
+inline msec_t elapsed_msec(msec_t tm) { return ticks_to_msec(elapsed_ticks(m2t(tm))); }
 
 } // namespace gcl

@@ -8,6 +8,10 @@
 #include "adkdef.h"
 #include "gtime.h"
 
+#ifndef ADK_DEFAULT_TIMER_EVENT_QUEUE_SIZE
+#define ADK_DEFAULT_TIMER_EVENT_QUEUE_SIZE           8
+#endif
+
 namespace adk
 {
 
@@ -27,5 +31,8 @@ inline unsigned set_interval(void (*func)(void *), msec_t interval_msec, void *d
     { return timer_helpers::set_timer_block(func, data, interval_msec, false); }
 
 void clear_timeout(unsigned id);
+
+void set_timer_event_queue_size(int size);
+unsigned int get_timer_event_queue_size();
 
 } // namespace adk

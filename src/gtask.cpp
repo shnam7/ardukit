@@ -17,7 +17,7 @@ unsigned Task::__task_count = 0;
 Task    *Task::__head = 0;    // head of task list
 Task    *Task::__cur = 0;     // pointer to current task
 
-Task::Task(msec_t interval) : m_id(++__task_count), m_interval(msec_to_ticks(interval))
+Task::Task(msec_t interval) : m_id(++__task_count), m_interval(interval)
 {
     // add to tsask list
     if (!__head) {
@@ -108,7 +108,7 @@ Task& Task::resume(msec_t delay_msec)
 void Task::schedule_next(msec_t delay_msec)
 {
     m_next_run = ticks() +
-        ((delay_msec==0) ? m_interval : msec_to_ticks(delay_msec));
+        ((delay_msec==0) ? m_interval : delay_msec);
 }
 
 void Task::run()

@@ -25,7 +25,7 @@ protected:
     unsigned        m_id            = 0;
     unsigned        m_state         = _INIT;
     unsigned        m_last_state    = _INIT;
-    tick_t          m_interval      = 0;
+    msec_t          m_interval      = 0;
     tick_t          m_next_run      = 0;
 
     task_func       m_func          = 0;
@@ -37,7 +37,7 @@ public:
     Task(msec_t interval=0);
     ~Task();
 
-    Task& set_interval(msec_t msec) { m_interval = msec_to_ticks(msec); return *this; }
+    Task& set_interval(msec_t msec) { m_interval = msec; return *this; }
     Task& set_event_emitter(EventEmitter *emitter) { m_emitter = emitter; return *this; }
     Task& set_event_emitter(EventEmitter& emitter) { return set_event_emitter(&emitter); }
 
@@ -55,7 +55,7 @@ public:
     bool is_suspended() { return m_state == _SUSPENDED; }
 
     unsigned task_id() { return m_id; }
-    msec_t interval() { return ticks_to_msec(m_interval); }    // return in msec
+    msec_t interval() { return m_interval; }    // return in msec
     void *data() { return m_data; }
 
     // //--- event emitter shariing I/F to reduce memory usage

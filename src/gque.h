@@ -31,6 +31,7 @@ public:
     ~CircularQueue();
 
 	bool init(unsigned capacity, unsigned item_size);
+	bool resize(unsigned capacity) { return init(capacity, m_q->item_size); }
     void clear() const { if (m_q) { m_q->head = m_q->tail = m_q->begin; } }
 
     bool put(const void *item=0) const;   // append

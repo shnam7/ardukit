@@ -20,6 +20,6 @@ void loop()
     char s_tm0[64]; u64_to_str(s_tm0, tm0);
     char s_tm1[64]; u64_to_str(s_tm1, tm1);
     char s_elapsed[64]; u64_to_str(s_elapsed, elapsed);
-    dmsg("tm0=%s tm1_us=%lu tm1=%s elapsed=%s %lu(us) %lu(ms)\n",
-        s_tm0, tm1_us, s_tm1, s_elapsed, t2u(elapsed), t2m(elapsed));
+    dmsg("sizeof(tick_t)=%d tm0=%s tm1_us=%lu tm1=%s elapsed=%s %lu(us) %lu(ms)\n",
+        sizeof(tick_t), s_tm0, tm1_us, s_tm1, s_elapsed, t2u(elapsed), t2m(elapsed));
 }

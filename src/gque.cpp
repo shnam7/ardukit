@@ -16,7 +16,7 @@ using namespace adk;
 //--------------------------------------------------------------------
 CircularQueue::~CircularQueue()
 {
-    if (m_q) delete[] m_q;
+    if (m_q) delete [] m_q;
     m_q = 0;
 }
 
@@ -29,6 +29,10 @@ bool CircularQueue::init(unsigned capacity, unsigned item_size)
         m_q = 0;
         return true;
     }
+
+    // check if this call is for re-sizing
+    if (m_q) delete [] m_q;
+
     unsigned buf_size = sizeof(cque_t) + (capacity + 1) * item_size;
 	m_q = (cque_t *)new char[buf_size];
     if (!m_q) {

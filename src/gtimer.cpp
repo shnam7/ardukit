@@ -9,18 +9,17 @@
 
 using namespace adk;
 
-const int MAX_CALL_STACK = 12;
 struct eblock {
     void        (*func)(void *);
     void        *data;
-    tick_t      interval;
+    msec_t      interval;
     tick_t      next_run;
     bool        once;
     unsigned    id;
 };
 
 static unsigned         _counter = 0;
-static Queue<eblock>    _eque(MAX_CALL_STACK);
+static Queue<eblock>    _eque(ADK_DEFAULT_TIMER_EVENT_QUEUE_SIZE);
 
 void adk::clear_timeout(unsigned id)
 {
@@ -31,6 +30,16 @@ void adk::clear_timeout(unsigned id)
     }
 }
 
+void adk::set_timer_event_queue_size(int size)
+{
+    _eque.resize(size);
+}
+
+unsigned int adk::get_timer_event_queue_size()
+{
+    return _eque.capacity();
+}
+
 unsigned timer_helpers::set_timer_block(void (*func)(void *), void *data, msec_t interval_msec, bool once)
 {
     if (_eque.is_full()) return 0;  // invalid id
@@ -39,8 +48,8 @@ unsigned timer_helpers::set_timer_block(void (*func)(void *), void *data, msec_t
 
     eb->func = func;
     eb->data = data;
-    eb->interval = msec_to_ticks(interval_msec);
-    eb->next_run = ticks() + eb->interval;
+    eb->interval = interval_msec;
+    eb->next_run = ticks() + interval_msec;
     eb->once = once;
     eb->id = ++_counter;
     // dmsg(">set_timer: id=%d interval=%d next=%ld avail=%d\n", eb->id, interval_msec, eb->next_run, _eque.available());

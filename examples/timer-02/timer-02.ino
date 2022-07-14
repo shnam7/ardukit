@@ -10,7 +10,7 @@ tick_t elapsed  = 0;
 void set_LED(void *)
 {
     tick_t tm1 = ticks();
-    dmsg("LED brightness:%d elapsed=%d(msec)\n", brightness, ticks_to_msec(tm1-tm0));
+    dmsg("LED brightness:%d elapsed=%ld(msec)\n", brightness, ticks_to_msec(tm1-tm0));
     tm0 = tm1;
 
     brightness += delta;
