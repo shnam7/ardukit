@@ -7,8 +7,11 @@
 #include "gtask.h"
 #include "gtime.h"
 #include "platform.h"
+#include "adkcore.h"
 
 using namespace adk;
+
+
 
 //-----------------------------------------------------------------------------
 // class Task
@@ -181,3 +184,11 @@ void Task::schedule()
     __cur = (__cur->m_next) ? __cur->m_next : __head; // move on to next task
     // dmsg("tid=%d s%d t=%ld n=%ld i=%ld",  __cur->m_id, __cur->m_state, ticks(), __cur->m_next_run, __cur->m_interval);
 }
+
+
+//--- init timer engine when the program starts execution
+class __TaskInitializer {
+public:
+    __TaskInitializer() { add_global_callback (Task::schedule); }
+};
+__TaskInitializer __task_initializer;    // call constructor

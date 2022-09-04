@@ -40,7 +40,7 @@ EdgeDetector& EdgeDetector::set_input_reader(float (*input_reader)(void *data), 
 
 void EdgeDetector::start_input_scan()
 {
-    if (!m_timer_id) m_timer_id = set_timeout(scan, m_scan_interval, this);
+    if (!m_timer_id) m_timer_id = set_interval(scan, m_scan_interval, this);
 }
 
 void EdgeDetector::stop_input_scan()
@@ -70,6 +70,4 @@ void EdgeDetector::scan(void *data)
     EdgeDetector *inst = (EdgeDetector *)data;
 
     inst->detect_edge(inst->read_input());
-
-    if (inst->m_timer_id) set_timeout(scan, inst->m_scan_interval, inst); // if enabled, set next scan schedule
 }

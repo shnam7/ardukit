@@ -38,7 +38,7 @@ Button& Button::bind(int pin_id, int mode, int sensitivity)
 void Button::enable()
 {
     pinMode(m_pin_id, (m_mode & 0x00FF) == INPUT_PULLUP ? INPUT_PULLUP : INPUT);
-    if (!m_timer_id) m_timer_id = set_timeout(scan, m_scan_interval, this);
+    if (!m_timer_id) m_timer_id = set_interval(scan, m_scan_interval, this);
 }
 
 void Button::disable()
@@ -68,7 +68,5 @@ void Button::scan(void *data)
         btn->m_is_pressed = false;
         btn->emit("release");
     }
-
     // dmsg("scan: sensitivity=%d, delta=%d cur==%d is_pressed=%d\n", btn->m_sensitivity, delta, cur, btn->is_pressed());
-    if (btn->m_timer_id) set_timeout(scan, btn->m_scan_interval, btn); // if enabled, set next scan schedule
 }

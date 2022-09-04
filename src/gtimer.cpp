@@ -6,6 +6,7 @@
 
 #include "gtimer.h"
 #include "gque.h"
+#include "adkcore.h"
 
 using namespace adk;
 
@@ -17,6 +18,7 @@ struct eblock {
     bool        once;
     unsigned    id;
 };
+
 
 static unsigned         _counter = 0;
 static Queue<eblock>    _eque(ADK_DEFAULT_TIMER_EVENT_QUEUE_SIZE);
@@ -40,6 +42,19 @@ unsigned int adk::get_timer_event_queue_size()
     return _eque.capacity();
 }
 
+
+//-----------------------------------------------------------------------------
+// timer_helpers
+//-----------------------------------------------------------------------------
+
+//--- init timer engine when the program starts execution
+class __TimerHelperInitializer {
+public:
+    __TimerHelperInitializer() { add_global_callback (timer_helpers::run_timer); }
+};
+__TimerHelperInitializer __timer_helper_initializer;    // call constructor
+
+
 unsigned timer_helpers::set_timer_block(void (*func)(void *), void *data, msec_t interval_msec, bool once)
 {
     if (_eque.is_full()) return 0;  // invalid id
@@ -53,6 +68,7 @@ unsigned timer_helpers::set_timer_block(void (*func)(void *), void *data, msec_t
     eb->once = once;
     eb->id = ++_counter;
     // dmsg(">set_timer: id=%d interval=%d next=%ld avail=%d\n", eb->id, interval_msec, eb->next_run, _eque.available());
+
     return eb->id;
 }
 
