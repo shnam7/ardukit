@@ -5,9 +5,7 @@
  */
 
 #pragma once
-
 #include "gque.h"
-
 
 namespace adk {
 

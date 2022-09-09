@@ -5,7 +5,6 @@
  */
 
 #pragma once
-#include "adkdef.h"
 #include "gtime.h"
 
 #ifndef ADK_DEFAULT_TIMER_EVENT_QUEUE_SIZE

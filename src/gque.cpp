@@ -4,7 +4,6 @@
  *  @module gque - circular queue
  */
 
-#include "adkdef.h"
 #include "gque.h"
 #include "gutil.h"
 #include <string.h>

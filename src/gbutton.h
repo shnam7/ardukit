@@ -8,6 +8,7 @@
  */
 
 #pragma once
+#include "platform.h"
 #include "gevent.h"
 
 namespace adk {

@@ -5,12 +5,9 @@
  */
 
 #include "gtask.h"
-#include "gtime.h"
-#include "platform.h"
 #include "adkcore.h"
 
 using namespace adk;
-
 
 
 //-----------------------------------------------------------------------------

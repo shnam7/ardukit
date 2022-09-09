@@ -6,7 +6,6 @@
 
 #pragma once
 #include "gque.h"
-#include "glist.h"
 
 namespace adk {
 

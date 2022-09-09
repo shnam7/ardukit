@@ -5,7 +5,6 @@
  */
 
 #pragma once
-#include "adkdef.h"
 #include <math.h>
 #include <float.h>
 

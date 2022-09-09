@@ -4,9 +4,8 @@
  *  @module Button - Noise filteriing input button
  */
 
-#include "platform.h"
-#include "gtimer.h"
 #include "gbutton.h"
+#include "gtimer.h"
 
 using namespace adk;
 
