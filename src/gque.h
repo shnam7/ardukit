@@ -33,10 +33,19 @@ public:
 	bool resize(unsigned capacity) { return init(capacity, m_q->item_size); }
     void clear() const { if (m_q) { m_q->head = m_q->tail = m_q->begin; } }
 
-    bool put(const void *item=0) const;   // append
-	bool get(void *item=0) const;       // pop from head
-    bool push(const void *item=0) const;  // prepend
-	bool pop(void *item=0) const;       // pop from tail
+    // array interface
+    bool append(const void *item=0) const;
+    bool prepend(const void *item=0) const;
+    bool shift(void *item=0) const;                                     // pop from head
+    bool unshift(const void *item=0) const { return prepend(item); };   // push from head
+
+    // queue interface
+    bool put(const void *item=0) const { return append(item); }     // append
+	bool get(void *item=0) const { return shift(item); }            // pop from head
+
+    // stack interface
+    bool push(const void *item=0) const { return append(item); };   // prepend
+	bool pop(void *item=0) const;                                   // pop from tail
 
     void *first() const { return peek(); }
     void *last() const { return is_empty() ? 0 :
