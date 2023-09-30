@@ -16,6 +16,7 @@
 #include "gtimer.h"
 
 #include "gque.h"
+#include "glist.h"
 #include "gevent.h"
 #include "gtask.h"
 
