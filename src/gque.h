@@ -44,7 +44,7 @@ public:
 	bool get(void *item=0) const { return shift(item); }            // pop from head
 
     // stack interface
-    bool push(const void *item=0) const { return append(item); };   // prepend
+    bool push(const void *item=0) const { return append(item); };   // append
 	bool pop(void *item=0) const;                                   // pop from tail
 
     void *first() const { return peek(); }
